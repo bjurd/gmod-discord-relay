@@ -11,7 +11,7 @@ local Socket = DiscordRelay.Socket.Socket
 function DiscordRelay.Socket.SendHeartbeat() -- TODO:
 	local Heartbeat = { ["op"] = 1, ["d"] = "null" }
 
-	Socket:write(util.TableToJSON(Heartbeat))
+	Socket:write(DiscordRelay.json.encode(Heartbeat))
 end
 
 function Socket:onConnected()
@@ -23,7 +23,7 @@ function Socket:onDisconnected()
 end
 
 function Socket:onMessage(Message)
-	local Data = util.JSONToTable(Message)
+	local Data = DiscordRelay.json.decode(Message)
 
 	if not Data then
 		error("Relay failed to read response message")

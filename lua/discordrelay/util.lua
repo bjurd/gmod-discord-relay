@@ -19,7 +19,7 @@ function DiscordRelay.Util.MarkdownEscape(String)
 end
 
 function DiscordRelay.Util.CreateWebhook(WebhookURL, Callback)
-	local WebhookCreationContent = util.TableToJSON({ ["name"] = "Relay" })
+	local WebhookCreationContent = DiscordRelay.json.encode({ ["name"] = "Relay" })
 
 	CHTTP({
 		["url"] = WebhookURL,
@@ -37,7 +37,7 @@ function DiscordRelay.Util.CreateWebhook(WebhookURL, Callback)
 		["success"] = function(Code, Body)
 			if Code ~= 200 then return end
 
-			local Data = util.JSONToTable(Body)
+			local Data = DiscordRelay.json.decode(Body)
 			if not istable(Data) then return end
 
 			local WebhookID = Data.id
@@ -55,7 +55,7 @@ function DiscordRelay.Util.ParseWebhooks(WebhookURL, Callback)
 	return function(Code, Body)
 		if Code ~= 200 then return end
 
-		local Data = util.JSONToTable(Body)
+		local Data = DiscordRelay.json.decode(Body)
 		if not istable(Data) then return end
 
 		if #Data < 1 then -- None there
@@ -99,7 +99,7 @@ end
 function DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData)
 	MessageData["allowed_mentions"] = { ["parse"] = {} } -- Nuh uh
 
-	local MessageBody = util.TableToJSON(MessageData)
+	local MessageBody = DiscordRelay.json.encode(MessageData)
 
 	CHTTP({
 		["url"] = MessageURL,
