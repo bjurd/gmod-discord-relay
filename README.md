@@ -1,5 +1,20 @@
+# GMod Discord Relay
+A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or external shenanigans. \
+(Except for the required binaries because this game's networking is severely handicaped)
+
 # Installation
 
-1. Download it however you wish, place in addons folder
-2. Configure `lua/discordrelay/config.lua`
-3. Horray!
+1. Clone the repository to your addons folder
+	<details>
+
+	<summary>Help I'm retarded</summary>
+
+	```bash
+	cd garrysmod/addons
+	git clone --recursive https://github.com/github-is-garbage/gmod-discord-relay discordrelay
+	```
+
+	</details>
+2. Install [GWSockets](https://github.com/FredyH/GWSockets) and [CHTTP](https://github.com/timschumi/gmod-chttp) into your `garrysmod/lua/bin` folder
+3. Configure `addons/discordrelay/lua/discordrelay/config.lua`
+4. Horray!
