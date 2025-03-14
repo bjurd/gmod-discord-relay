@@ -17,5 +17,7 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 
 	</details>
 2. Install [GWSockets](https://github.com/FredyH/GWSockets) and [CHTTP](https://github.com/timschumi/gmod-chttp) into your `garrysmod/lua/bin` folder
+	> [!NOTE]
+	> Because of [an issue with GWSockets](https://github.com/FredyH/GWSockets/issues/42) you will most likely need to manually compile it
 3. Configure `addons/discordrelay/lua/discordrelay/config.lua`
 4. Horray!
