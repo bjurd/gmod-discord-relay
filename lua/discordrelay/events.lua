@@ -1,7 +1,26 @@
 DiscordRelay.Events = DiscordRelay.Events or {}
 
 function DiscordRelay.Events.OnConnected()
-	print("connected")
+	print("connected, identifying")
+
+	local Identify = {
+		["op"] = 2,
+
+		["d"] = {
+			["token"] = Format("Bot %s", DiscordRelay.Config.Token),
+			["intents"] = DiscordRelay.Config.Intents,
+
+			["properties"] = {
+				["os"] = "linux",
+				["browser"] = "Discord iOS",
+				["device"] = "Discord iOS"
+			},
+
+			["compress"] = false
+		}
+	}
+
+	DiscordRelay.Socket.Socket:write(DiscordRelay.json.encode(Identify))
 end
 
 function DiscordRelay.Events.OnChatMessage(Data)

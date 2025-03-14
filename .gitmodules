@@ -1,0 +1,3 @@
+[submodule "lua/discordrelay/jsonlua"]
+	path = lua/discordrelay/jsonlua
+	url = https://github.com/rxi/json.lua

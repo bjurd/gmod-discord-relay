@@ -1,22 +1,21 @@
-if DiscordRelay.Socket then
-	DiscordRelay.Socket:close()
+DiscordRelay.Socket = DiscordRelay.Socket or {}
+
+if DiscordRelay.Socket.Socket then
+	DiscordRelay.Socket.Socket:close()
 end
 
-DiscordRelay.Socket = GWSockets.createWebSocket(Format("wss://gateway.discord.gg/?v=%d&encoding=json", DiscordRelay.Config.API))
-local Socket = DiscordRelay.Socket
+-- Incredible variable names
+DiscordRelay.Socket.Socket = GWSockets.createWebSocket(Format("wss://gateway.discord.gg/?v=%d&encoding=json", DiscordRelay.Config.API))
+local Socket = DiscordRelay.Socket.Socket
+
+function DiscordRelay.Socket.SendHeartbeat() -- TODO:
+	local Heartbeat = { ["op"] = 1, ["d"] = "null" }
+
+	Socket:write(util.TableToJSON(Heartbeat))
+end
 
 function Socket:onConnected()
-	print("connected, identifying")
 
-	local Identify = {
-		op = 2,
-		d = {
-			token = DiscordRelay.Config.Token,
-			intents = DiscordRelay.Config.Intents
-		}
-	}
-
-	Socket:write(util.TableToJSON(Identify))
 end
 
 function Socket:onDisconnected()
@@ -37,8 +36,6 @@ function Socket:onMessage(Message)
 		error("Relay got no operation")
 		return
 	end
-
-	PrintTable(Data)
 
 	DiscordRelay.Events.RunOperation(Operation)
 end
