@@ -16,4 +16,6 @@ include("config.lua")
 hook.Add("InitPostEntity", "DiscordRelay::Init", function()
 	include("discordrelay/events.lua")
 	include("discordrelay/socket.lua")
+
+	DiscordRelay.Socket.Setup()
 end)

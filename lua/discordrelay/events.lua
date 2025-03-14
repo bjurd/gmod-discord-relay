@@ -5,26 +5,24 @@ function DiscordRelay.Events.Heartbeat()
 end
 
 function DiscordRelay.Events.OnConnected(Data)
-	local Identify = {
-		["op"] = 2,
+	if DiscordRelay.Socket.SessionID then
+		DiscordRelay.Socket.Resume()
+		print("resuming")
+	else
+		DiscordRelay.Socket.Identify()
+		print("identifying")
 
-		["d"] = {
-			["token"] = Format("Bot %s", DiscordRelay.Config.Token),
-			["intents"] = DiscordRelay.Config.Intents,
+		timer.Create("DiscordRelay::Heartbeat", Data.d.heartbeat_interval / 1000, 0, DiscordRelay.Events.Heartbeat)
+	end
+end
 
-			["properties"] = {
-				["os"] = "linux",
-				["browser"] = "Discord iOS",
-				["device"] = "Discord iOS"
-			},
+function DiscordRelay.Events.Ready(Data)
+	Data = Data.d
+	if not istable(Data) then return end
 
-			["compress"] = false
-		}
-	}
+	print("ready")
 
-	DiscordRelay.Socket.Socket:write(DiscordRelay.json.encode(Identify))
-
-	timer.Create("DiscordRelay::Heartbeat", Data.d.heartbeat_interval / 1000, 0, DiscordRelay.Events.Heartbeat)
+	DiscordRelay.Socket.SessionID = Data.session_id
 end
 
 function DiscordRelay.Events.OnChatMessage(Data)
@@ -104,7 +102,11 @@ function DiscordRelay.Events.RunOperation(Operation, Data)
 	elseif Operation == 0 then
 		DiscordRelay.Socket.LastSequenceNumber = Data.s
 
-		if Data.t == "MESSAGE_CREATE" then
+		if Data.t == "READY" then
+			DiscordRelay.Events.Ready(Data)
+		elseif Data.t == "RESUMED" then
+			print("resumed")
+		elseif Data.t == "MESSAGE_CREATE" then
 			DiscordRelay.Events.OnDiscordMessage(Data)
 		end
 	end

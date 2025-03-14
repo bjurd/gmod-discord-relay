@@ -1,12 +1,6 @@
 DiscordRelay.Socket = DiscordRelay.Socket or {}
 
-if DiscordRelay.Socket.Socket then
-	DiscordRelay.Socket.Socket:close()
-end
-
--- Incredible variable names
-DiscordRelay.Socket.Socket = GWSockets.createWebSocket(Format("wss://gateway.discord.gg/?v=%d&encoding=json", DiscordRelay.Config.API))
-local Socket = DiscordRelay.Socket.Socket
+local Socket
 
 function DiscordRelay.Socket.SendHeartbeat()
 	local Heartbeat = { ["op"] = 1, ["d"] = DiscordRelay.Socket.LastSequenceNumber }
@@ -14,36 +8,84 @@ function DiscordRelay.Socket.SendHeartbeat()
 	Socket:write(DiscordRelay.json.encode(Heartbeat))
 end
 
-function Socket:onConnected()
-	DiscordRelay.Socket.Connected = true
+function DiscordRelay.Socket.Identify()
+	local Identify = {
+		["op"] = 2,
+
+		["d"] = {
+			["token"] = Format("Bot %s", DiscordRelay.Config.Token),
+			["intents"] = DiscordRelay.Config.Intents,
+
+			["properties"] = {
+				["os"] = "linux",
+				["browser"] = "Discord iOS",
+				["device"] = "Discord iOS"
+			},
+
+			["compress"] = false
+		}
+	}
+
+	Socket:write(DiscordRelay.json.encode(Identify))
 end
 
-function Socket:onDisconnected()
-	DiscordRelay.Socket.Connected = false
+function DiscordRelay.Socket.Resume()
+	local Resume = {
+		["op"] = 6,
 
-	print("disconnected")
+		["d"] = {
+			["token"] = Format("Bot %s", DiscordRelay.Config.Token),
+			["session_id"] = DiscordRelay.Socket.SessionID,
+			["seq"] = DiscordRelay.Socket.LastSequenceNumber or 0
+		}
+	}
+
+	Socket:write(DiscordRelay.json.encode(Resume))
 end
 
-function Socket:onMessage(Message)
-	local Data = DiscordRelay.json.decode(Message)
-
-	if not Data then
-		error("Relay failed to read response message")
-		return
+function DiscordRelay.Socket.Setup()
+	if DiscordRelay.Socket.Socket then
+		DiscordRelay.Socket.Socket:close()
+		DiscordRelay.Socket.Socket = nil
 	end
 
-	local Operation = tonumber(Data.op)
+	DiscordRelay.Socket.Socket = GWSockets.createWebSocket(Format("wss://gateway.discord.gg/?v=%d&encoding=json", DiscordRelay.Config.API))
+	Socket = DiscordRelay.Socket.Socket
 
-	if not isnumber(Operation) then
-		error("Relay got no operation")
-		return
+	function Socket:onConnected()
+		DiscordRelay.Socket.Connected = true
 	end
 
-	DiscordRelay.Events.RunOperation(Operation, Data)
-end
+	function Socket:onDisconnected()
+		DiscordRelay.Socket.Connected = false
 
-function Socket:onError(Message)
-	print("error", Message)
-end
+		print("disconnected")
 
-Socket:open()
+		timer.Remove("DiscordRelay::Heartbeat")
+		timer.Simple(5, DiscordRelay.Socket.Setup)
+	end
+
+	function Socket:onMessage(Message)
+		local Data = DiscordRelay.json.decode(Message)
+
+		if not Data then
+			error("Relay failed to read response message")
+			return
+		end
+
+		local Operation = tonumber(Data.op)
+
+		if not isnumber(Operation) then
+			error("Relay got no operation")
+			return
+		end
+
+		DiscordRelay.Events.RunOperation(Operation, Data)
+	end
+
+	function Socket:onError(Message)
+		print("error", Message)
+	end
+
+	Socket:open()
+end
