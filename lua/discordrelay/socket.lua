@@ -67,21 +67,21 @@ function DiscordRelay.Socket.Setup()
 	end
 
 	function Socket:onMessage(Message)
-		local Data = DiscordRelay.json.decode(Message)
+		Message = DiscordRelay.json.decode(Message)
 
-		if not Data then
+		if not Message then
 			error("Relay failed to read response message")
 			return
 		end
 
-		local Operation = tonumber(Data.op)
+		local Operation = tonumber(Message.op)
 
 		if not isnumber(Operation) then
 			error("Relay got no operation")
 			return
 		end
 
-		DiscordRelay.Events.RunOperation(Operation, Data)
+		DiscordRelay.Events.RunOperation(Operation, Message)
 	end
 
 	function Socket:onError(Message)
