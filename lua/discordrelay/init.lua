@@ -4,8 +4,6 @@ util.AddNetworkString("DiscordRelay::Message")
 
 include("util.lua")
 
-DiscordRelay.json = include("jsonlua/json.lua") -- gmod json SUCKS
-
 DiscordRelay.Util.RequireModule("gwsockets")
 DiscordRelay.Util.RequireModule("chttp")
 

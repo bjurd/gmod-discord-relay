@@ -6,7 +6,7 @@ local Socket
 function DiscordRelay.Socket.SendHeartbeat()
 	local Heartbeat = { ["op"] = Operations.HEARTBEAT, ["d"] = DiscordRelay.Socket.LastSequenceNumber }
 
-	Socket:write(DiscordRelay.json.encode(Heartbeat))
+	Socket:write(util.TableToJSON(Heartbeat))
 end
 
 function DiscordRelay.Socket.Identify()
@@ -27,7 +27,7 @@ function DiscordRelay.Socket.Identify()
 		}
 	}
 
-	Socket:write(DiscordRelay.json.encode(Identify))
+	Socket:write(util.TableToJSON(Identify))
 end
 
 function DiscordRelay.Socket.Resume()
@@ -41,7 +41,7 @@ function DiscordRelay.Socket.Resume()
 		}
 	}
 
-	Socket:write(DiscordRelay.json.encode(Resume))
+	Socket:write(util.TableToJSON(Resume))
 end
 
 function DiscordRelay.Socket.Setup()
@@ -65,7 +65,7 @@ function DiscordRelay.Socket.Setup()
 	end
 
 	function Socket:onMessage(Message)
-		Message = DiscordRelay.json.decode(Message)
+		Message = util.JSONToTable(Message)
 
 		if not Message then
 			error("Relay failed to read response message")
