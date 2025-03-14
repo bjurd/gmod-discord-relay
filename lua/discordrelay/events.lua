@@ -1,4 +1,5 @@
 DiscordRelay.Events = DiscordRelay.Events or {}
+local Operations = DiscordRelay.Enums.Operations
 
 function DiscordRelay.Events.Heartbeat()
 	DiscordRelay.Socket.SendHeartbeat()
@@ -95,11 +96,11 @@ end
 
 -- TODO: Make this better
 function DiscordRelay.Events.RunOperation(Operation, Data)
-	if Operation == 10 then
+	if Operation == Operations.HELLO then
 		DiscordRelay.Events.OnConnected(Data)
-	elseif Operation == 11 then
-		-- Heartbeat ack
-	elseif Operation == 0 then
+	elseif Operation == Operations.HEARTBEAT_ACK then
+		-- Heartbeat ack TODO: Timeout
+	elseif Operation == Operations.DISPATCH then
 		DiscordRelay.Socket.LastSequenceNumber = Data.s
 
 		if Data.t == "READY" then

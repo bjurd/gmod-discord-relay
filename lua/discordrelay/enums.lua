@@ -18,3 +18,17 @@ DiscordRelay.Enums.Intents.DIRECT_MESSAGE_REACTIONS = bit.lshift(1, 13)
 DiscordRelay.Enums.Intents.DIRECT_MESSAGE_TYPING = bit.lshift(1, 14)
 DiscordRelay.Enums.Intents.MESSAGE_CONTENT = bit.lshift(1, 15)
 DiscordRelay.Enums.Intents.GUILD_SCHEDULED_EVENTS = bit.lshift(1, 16)
+
+DiscordRelay.Enums.Operations = DiscordRelay.Enums.Operations or {}
+DiscordRelay.Enums.Operations.DISPATCH = 0
+DiscordRelay.Enums.Operations.HEARTBEAT = 1
+DiscordRelay.Enums.Operations.IDENTIFY = 2
+DiscordRelay.Enums.Operations.PRESENCE_UPDATE = 3
+DiscordRelay.Enums.Operations.VOICE_UPDATE = 4
+DiscordRelay.Enums.Operations.VOICE_PING = 5
+DiscordRelay.Enums.Operations.RESUME = 6
+DiscordRelay.Enums.Operations.RECONNECT = 7
+DiscordRelay.Enums.Operations.REQUEST_MEMBERS = 8
+DiscordRelay.Enums.Operations.INVALID_SESSION = 9
+DiscordRelay.Enums.Operations.HELLO = 10
+DiscordRelay.Enums.Operations.HEARTBEAT_ACK = 11

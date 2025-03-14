@@ -1,16 +1,17 @@
 DiscordRelay.Socket = DiscordRelay.Socket or {}
+local Operations = DiscordRelay.Enums.Operations
 
 local Socket
 
 function DiscordRelay.Socket.SendHeartbeat()
-	local Heartbeat = { ["op"] = 1, ["d"] = DiscordRelay.Socket.LastSequenceNumber }
+	local Heartbeat = { ["op"] = Operations.HEARTBEAT, ["d"] = DiscordRelay.Socket.LastSequenceNumber }
 
 	Socket:write(DiscordRelay.json.encode(Heartbeat))
 end
 
 function DiscordRelay.Socket.Identify()
 	local Identify = {
-		["op"] = 2,
+		["op"] = Operations.IDENTIFY,
 
 		["d"] = {
 			["token"] = Format("Bot %s", DiscordRelay.Config.Token),
@@ -31,7 +32,7 @@ end
 
 function DiscordRelay.Socket.Resume()
 	local Resume = {
-		["op"] = 6,
+		["op"] = Operations.RESUME,
 
 		["d"] = {
 			["token"] = Format("Bot %s", DiscordRelay.Config.Token),
