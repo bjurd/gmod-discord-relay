@@ -1,7 +1,7 @@
 # GMod Discord Relay
 A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or external shenanigans.
 
-(Except for the required binaries because this game's networking is severely handicaped)
+(Except for the required binaries because this game's networking is severely handicapped)
 
 # Installation
 
