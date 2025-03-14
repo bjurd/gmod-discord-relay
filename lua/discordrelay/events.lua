@@ -62,6 +62,9 @@ function DiscordRelay.Events.OnDiscordMessage(Data)
 
 	if not istable(Data) then return end
 
+	local Content = Data.content
+	if not isstring(Content) or string.len(Content) < 1 then return end
+
 	local GuildID = Data.guild_id
 	local ChannelID = Data.channel_id
 
@@ -71,9 +74,6 @@ function DiscordRelay.Events.OnDiscordMessage(Data)
 	local Member = Data.member
 	local Author = Data.author
 	if not istable(Member) or not istable(Author) then return end
-
-	local Content = Data.content
-	if not isstring(Content) then return end
 
 	local Username = isstring(Member.nick) and Member.nick or (isstring(Author.global_name) and Author.global_name or Author.username) -- Brap you
 
