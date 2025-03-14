@@ -5,6 +5,8 @@ function DiscordRelay.Events.RunOperation(Operation, Message)
 end
 
 include("events/chatmsg.lua")
+include("events/connect.lua")
+include("events/disconnect.lua")
 include("events/discordmsg.lua")
 include("events/dispatch.lua")
 include("events/hello.lua")
