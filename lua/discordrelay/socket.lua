@@ -60,8 +60,6 @@ function DiscordRelay.Socket.Setup()
 	function Socket:onDisconnected()
 		DiscordRelay.Socket.Connected = false
 
-		print("disconnected")
-
 		timer.Remove("DiscordRelay::Heartbeat")
 		timer.Simple(5, DiscordRelay.Socket.Setup)
 	end
@@ -85,7 +83,7 @@ function DiscordRelay.Socket.Setup()
 	end
 
 	function Socket:onError(Message)
-		print("error", Message)
+
 	end
 
 	Socket:open()

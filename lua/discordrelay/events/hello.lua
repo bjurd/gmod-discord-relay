@@ -3,10 +3,8 @@ hook.Add("DiscordRelay::RunOperation", "DiscordRelay::Hello", function(Operation
 
 	if DiscordRelay.Socket.SessionID then
 		DiscordRelay.Socket.Resume()
-		print("resuming")
 	else
 		DiscordRelay.Socket.Identify()
-		print("identifying")
 
 		timer.Create("DiscordRelay::Heartbeat", Data.heartbeat_interval / 1000, 0, DiscordRelay.Socket.SendHeartbeat)
 	end
