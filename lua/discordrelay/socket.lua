@@ -8,17 +8,19 @@ end
 DiscordRelay.Socket.Socket = GWSockets.createWebSocket(Format("wss://gateway.discord.gg/?v=%d&encoding=json", DiscordRelay.Config.API))
 local Socket = DiscordRelay.Socket.Socket
 
-function DiscordRelay.Socket.SendHeartbeat() -- TODO:
-	local Heartbeat = { ["op"] = 1, ["d"] = "null" }
+function DiscordRelay.Socket.SendHeartbeat()
+	local Heartbeat = { ["op"] = 1, ["d"] = DiscordRelay.Socket.LastSequenceNumber }
 
 	Socket:write(DiscordRelay.json.encode(Heartbeat))
 end
 
 function Socket:onConnected()
-
+	DiscordRelay.Socket.Connected = true
 end
 
 function Socket:onDisconnected()
+	DiscordRelay.Socket.Connected = false
+
 	print("disconnected")
 end
 

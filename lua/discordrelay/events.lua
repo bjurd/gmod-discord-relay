@@ -1,8 +1,10 @@
 DiscordRelay.Events = DiscordRelay.Events or {}
 
-function DiscordRelay.Events.OnConnected()
-	print("connected, identifying")
+function DiscordRelay.Events.Heartbeat()
+	DiscordRelay.Socket.SendHeartbeat()
+end
 
+function DiscordRelay.Events.OnConnected(Data)
 	local Identify = {
 		["op"] = 2,
 
@@ -21,6 +23,8 @@ function DiscordRelay.Events.OnConnected()
 	}
 
 	DiscordRelay.Socket.Socket:write(DiscordRelay.json.encode(Identify))
+
+	timer.Create("DiscordRelay::Heartbeat", Data.d.heartbeat_interval / 1000, 0, DiscordRelay.Events.Heartbeat)
 end
 
 function DiscordRelay.Events.OnChatMessage(Data)
@@ -94,8 +98,12 @@ end
 -- TODO: Make this better
 function DiscordRelay.Events.RunOperation(Operation, Data)
 	if Operation == 10 then
-		DiscordRelay.Events.OnConnected()
+		DiscordRelay.Events.OnConnected(Data)
+	elseif Operation == 11 then
+		-- Heartbeat ack
 	elseif Operation == 0 then
+		DiscordRelay.Socket.LastSequenceNumber = Data.s
+
 		if Data.t == "MESSAGE_CREATE" then
 			DiscordRelay.Events.OnDiscordMessage(Data)
 		end
