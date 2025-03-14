@@ -69,4 +69,4 @@ DiscordRelay.Config.EscapeMessages = true
 
 	Will show the default Discord profile picture if false
 --]]
-DiscordRelay.Config.ShowProfilePictures = false
+DiscordRelay.Config.ShowProfilePictures = true

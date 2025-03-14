@@ -2,6 +2,8 @@ DiscordRelay.Util = DiscordRelay.Util or {}
 
 DiscordRelay.Util.NoOp = function() return end
 
+DiscordRelay.Util.AvatarCache = DiscordRelay.Util.AvatarCache or {}
+
 function DiscordRelay.Util.RequireModule(Name)
 	if not util.IsBinaryModuleInstalled(Name) then
 		error(Format("Binary module %s is not installed for Discord Relay!", Name))
@@ -138,6 +140,27 @@ function DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData, NoRetry)
 		["success"] = NoRetry and DiscordRelay.Util.NoOp or DiscordRelay.Util.CheckWebhookMessage(MessageURL, MessageData),
 		["failed"] = DiscordRelay.Util.NoOp
 	})
+end
+
+function DiscordRelay.Util.FetchAvatar(SteamID64, Callback)
+	if DiscordRelay.Util.AvatarCache[SteamID64] then
+		Callback(DiscordRelay.Util.AvatarCache[SteamID64])
+		return
+	end
+
+	local XMLURL = Format("https://steamcommunity.com/profiles/%s?xml=1", SteamID64)
+
+	http.Fetch(XMLURL, function(Body)
+		local AvatarURL = string.match(Body, "<avatarMedium>%s*<!%[CDATA%[(.-)%]%]>%s*</avatarMedium>")
+
+		if AvatarURL then
+			DiscordRelay.Util.AvatarCache[SteamID64] = AvatarURL
+		end
+
+		Callback(AvatarURL)
+	end, function()
+		Callback()
+	end)
 end
 
 function DiscordRelay.Util.ColorToDecimal(Color)

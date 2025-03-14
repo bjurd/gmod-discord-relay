@@ -7,10 +7,11 @@ hook.Add("player_say", "DiscordRelay::OnChatMessage", function(Data)
 
 	if string.len(Content) < 1 then return end
 
+	local Sender
 	local Username = "Console"
 
 	if UserID ~= 0 then
-		local Sender = Player(UserID)
+		Sender = Player(UserID)
 
 		if IsValid(Sender) then
 			Username = Sender:Nick()
@@ -27,10 +28,23 @@ hook.Add("player_say", "DiscordRelay::OnChatMessage", function(Data)
 		Content = DiscordRelay.Util.MarkdownEscape(Content)
 	end
 
-	DiscordRelay.Util.GetWebhook(function(MessageURL)
-		DiscordRelay.Util.SendWebhookMessage(MessageURL, {
-			["content"] = string.Left(Content, 2000),
-			["username"] = string.Left(Username, 32)
-		})
-	end)
+	local Payload = {
+		["content"] = string.Left(Content, 2000),
+		["username"] = string.Left(Username, 32),
+		["avatar_url"] = nil
+	}
+
+	if DiscordRelay.Config.ShowProfilePictures and IsValid(Sender) then
+		DiscordRelay.Util.FetchAvatar(Sender:SteamID64(), function(AvatarURL)
+			Payload["avatar_url"] = AvatarURL
+
+			DiscordRelay.Util.GetWebhook(function(MessageURL)
+				DiscordRelay.Util.SendWebhookMessage(MessageURL, Payload)
+			end)
+		end)
+	else
+		DiscordRelay.Util.GetWebhook(function(MessageURL)
+			DiscordRelay.Util.SendWebhookMessage(MessageURL, Payload)
+		end)
+	end
 end)
