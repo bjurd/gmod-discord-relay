@@ -57,8 +57,34 @@ function DiscordRelay.Events.OnChatMessage(Data)
 	end)
 end
 
-function DiscordRelay.Events.OnDiscordMessage(Author, Message)
+function DiscordRelay.Events.OnDiscordMessage(Data)
+	Data = Data.d
 
+	if not istable(Data) then return end
+
+	local GuildID = Data.guild_id
+	local ChannelID = Data.channel_id
+
+	if GuildID ~= DiscordRelay.Config.GuildID then return end
+	if ChannelID ~= DiscordRelay.Config.ChannelID then return end
+
+	local Member = Data.member
+	local Author = Data.author
+	if not istable(Member) or not istable(Author) then return end
+
+	local Content = Data.content
+	if not isstring(Content) then return end
+
+	local Username = isstring(Member.nick) and Member.nick or (isstring(Author.global_name) and Author.global_name or Author.username) -- Brap you
+
+	if DiscordRelay.Config.FilterUsernames then
+		Username = DiscordRelay.Util.ASCIIFilter(Username)
+	end
+
+	net.Start("DiscordRelay::Message")
+	net.WriteString(Username)
+	net.WriteString(Content)
+	net.Broadcast()
 end
 
 function DiscordRelay.Events.OnPlayerConnected(SteamID, SteamID64)
@@ -66,11 +92,13 @@ function DiscordRelay.Events.OnPlayerConnected(SteamID, SteamID64)
 end
 
 -- TODO: Make this better
-function DiscordRelay.Events.RunOperation(Operation)
-	print("runop", Operation)
-
+function DiscordRelay.Events.RunOperation(Operation, Data)
 	if Operation == 10 then
 		DiscordRelay.Events.OnConnected()
+	elseif Operation == 0 then
+		if Data.t == "MESSAGE_CREATE" then
+			DiscordRelay.Events.OnDiscordMessage(Data)
+		end
 	end
 end
 

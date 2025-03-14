@@ -37,7 +37,7 @@ function Socket:onMessage(Message)
 		return
 	end
 
-	DiscordRelay.Events.RunOperation(Operation)
+	DiscordRelay.Events.RunOperation(Operation, Data)
 end
 
 function Socket:onError(Message)
