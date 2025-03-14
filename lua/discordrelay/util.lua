@@ -84,7 +84,7 @@ function DiscordRelay.Util.ParseWebhooks(WebhookURL, Callback)
 	end
 end
 
-function DiscordRelay.Util.GetWebhook(Callback) -- TODO: This does a lot of networking and needs caching
+function DiscordRelay.Util.GetWebhook(Callback)
 	if DiscordRelay.Socket.WebhookMessageURL then
 		Callback(DiscordRelay.Socket.WebhookMessageURL)
 		return
