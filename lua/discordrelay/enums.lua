@@ -1,0 +1,20 @@
+DiscordRelay.Enums = DiscordRelay.Enums or {}
+
+DiscordRelay.Enums.Intents = DiscordRelay.Enums.Intents or {}
+DiscordRelay.Enums.Intents.GUILDS = bit.lshift(1, 0)
+DiscordRelay.Enums.Intents.GUILD_MEMBERS  = bit.lshift(1, 1)
+DiscordRelay.Enums.Intents.GUILD_BANS = bit.lshift(1, 2)
+DiscordRelay.Enums.Intents.GUILD_EMOJIS_AND_STICKERS  = bit.lshift(1, 3)
+DiscordRelay.Enums.Intents.GUILD_INTEGRATIONS = bit.lshift(1, 4)
+DiscordRelay.Enums.Intents.GUILD_WEBHOOKS = bit.lshift(1, 5)
+DiscordRelay.Enums.Intents.GUILD_INVITES = bit.lshift(1, 6)
+DiscordRelay.Enums.Intents.GUILD_VOICE_STATES = bit.lshift(1, 7)
+DiscordRelay.Enums.Intents.GUILD_PRESENCES = bit.lshift(1, 8)
+DiscordRelay.Enums.Intents.GUILD_MESSAGES = bit.lshift(1, 9)
+DiscordRelay.Enums.Intents.GUILD_MESSAGE_REACTIONS = bit.lshift(1, 10)
+DiscordRelay.Enums.Intents.GUILD_MESSAGE_TYPING = bit.lshift(1, 11)
+DiscordRelay.Enums.Intents.DIRECT_MESSAGES = bit.lshift(1, 12)
+DiscordRelay.Enums.Intents.DIRECT_MESSAGE_REACTIONS = bit.lshift(1, 13)
+DiscordRelay.Enums.Intents.DIRECT_MESSAGE_TYPING = bit.lshift(1, 14)
+DiscordRelay.Enums.Intents.MESSAGE_CONTENT = bit.lshift(1, 15)
+DiscordRelay.Enums.Intents.GUILD_SCHEDULED_EVENTS = bit.lshift(1, 16)

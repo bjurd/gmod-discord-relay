@@ -1,0 +1,1 @@
+include("discordrelay/init.lua")
