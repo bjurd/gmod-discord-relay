@@ -70,3 +70,31 @@ DiscordRelay.Config.EscapeMessages = true
 	Will show the default Discord profile picture if false
 --]]
 DiscordRelay.Config.ShowProfilePictures = true
+
+
+
+--[[
+	Whether or not commands are useable
+--]]
+DiscordRelay.Config.EnableCommands = true
+
+
+
+--[[
+	The prefix for Discord commands
+--]]
+DiscordRelay.Config.CommandPrefix = ";"
+
+
+
+--[[
+	Role IDs for staff-only commands
+--]]
+DiscordRelay.Config.StaffRoles = { }
+
+
+
+--[[
+	Whether or not Discord users with administrative permissions will be considered staff
+--]]
+DiscordRelay.Config.AdminsAreStaff = true

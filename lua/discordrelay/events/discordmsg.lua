@@ -17,6 +17,10 @@ hook.Add("DiscordRelay::DispatchEvent", "DiscordRelay::OnDiscordMessage", functi
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
 	end
 
+	if DiscordRelay.Commands.TryRunCommand(Author, Member, Content) then
+		return
+	end
+
 	net.Start("DiscordRelay::Message")
 		net.WriteString(Username)
 		net.WriteString(Content)
