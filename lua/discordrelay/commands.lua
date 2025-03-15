@@ -23,6 +23,8 @@ function DiscordRelay.Commands.TryRunCommand(Author, Member, Content)
 	if not isfunction(CommandCallback) then return false end
 
 	CommandCallback(Author, Member, Arguments)
+
+	return true
 end
 
 DiscordRelay.Util.IncludeFromFolder("commands")
