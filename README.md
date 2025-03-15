@@ -12,7 +12,7 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 
 	```bash
 	cd garrysmod/addons
-	git clone --recursive https://github.com/github-is-garbage/gmod-discord-relay discordrelay
+	git clone https://github.com/github-is-garbage/gmod-discord-relay discordrelay
 	```
 
 	</details>
