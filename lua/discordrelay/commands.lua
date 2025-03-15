@@ -20,7 +20,6 @@ function DiscordRelay.Commands.MemberIsStaff(Member)
 
 	for i = 1, StaffRoleCount do -- -rep
 		for j = 1, MemberRoleCount do
-			print(Member.roles[j], type(Member.roles[j]), DiscordRelay.Config.StaffRoles[i], type(DiscordRelay.Config.StaffRoles[i]))
 			if Member.roles[j] == DiscordRelay.Config.StaffRoles[i] then
 				return true
 			end
