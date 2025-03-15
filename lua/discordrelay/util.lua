@@ -183,37 +183,10 @@ function DiscordRelay.Util.ColorToDecimal(Color)
 	return bit.lshift(Color.r, 16) + bit.lshift(Color.g, 8) + Color.b
 end
 
-function DiscordRelay.Util.CreateEmbed(Color, Content)
+function DiscordRelay.Util.CreateEmbed(Color, Author, Content)
 	return {
 		["color"] = DiscordRelay.Util.ColorToDecimal(Color),
+		["author"] = Author and { ["name"] = Author } or nil,
 		["description"] = Content
 	}
-end
-
-function DiscordRelay.Util.CreateConnectEmbed(SteamID, Username)
-	if DiscordRelay.Config.FilterUsernames then
-		Username = DiscordRelay.Util.ASCIIFilter(Username)
-	end
-
-	local Description = Format("| %s | %s connected", SteamID, Username)
-
-	if DiscordRelay.Config.EscapeMessages then
-		Description = DiscordRelay.Util.MarkdownEscape(Description)
-	end
-
-	return DiscordRelay.Util.CreateEmbed(Color(0, 255, 0), Description)
-end
-
-function DiscordRelay.Util.CreateDisconnectEmbed(SteamID, Username, Reason)
-	if DiscordRelay.Config.FilterUsernames then
-		Username = DiscordRelay.Util.ASCIIFilter(Username)
-	end
-
-	local Description = Format("| %s | %s disconnected (%s)", SteamID, Username, Reason)
-
-	if DiscordRelay.Config.EscapeMessages then
-		Description = DiscordRelay.Util.MarkdownEscape(Description)
-	end
-
-	return DiscordRelay.Util.CreateEmbed(Color(255, 0, 0), Description)
 end

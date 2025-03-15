@@ -8,14 +8,18 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 
 	if DiscordRelay.Config.FilterUsernames then
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
+		Username = DiscordRelay.Util.MarkdownEscape(Username)
 	end
 
 	Reason = DiscordRelay.Util.ASCIIFilter(Reason)
+	Reason = DiscordRelay.Util.MarkdownEscape(Reason)
+
+	local Description = Format("%s disconnected (%s)", Username, Reason)
 
 	DiscordRelay.Util.WebhookAutoSend({
 		["username"] = string.Left(Username, 32),
 		["embeds"] = {
-			DiscordRelay.Util.CreateDisconnectEmbed(SteamID, Username, Reason)
+			DiscordRelay.Util.CreateEmbed(Color(255, 0, 0), SteamID, Description)
 		}
 	}, util.SteamIDTo64(SteamID))
 end)
