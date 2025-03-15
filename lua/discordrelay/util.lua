@@ -142,6 +142,22 @@ function DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData, NoRetry)
 	})
 end
 
+function DiscordRelay.Util.WebhookAutoSend(MessageData, SteamID64)
+	if DiscordRelay.Config.ShowProfilePictures and isstring(SteamID64) then
+		DiscordRelay.Util.FetchAvatar(SteamID64, function(AvatarURL)
+			MessageData["avatar_url"] = AvatarURL
+
+			DiscordRelay.Util.GetWebhook(function(MessageURL)
+				DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData)
+			end)
+		end)
+	else
+		DiscordRelay.Util.GetWebhook(function(MessageURL)
+			DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData)
+		end)
+	end
+end
+
 function DiscordRelay.Util.FetchAvatar(SteamID64, Callback)
 	if DiscordRelay.Util.AvatarCache[SteamID64] then
 		Callback(DiscordRelay.Util.AvatarCache[SteamID64])

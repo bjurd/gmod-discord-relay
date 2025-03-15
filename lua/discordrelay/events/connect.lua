@@ -9,12 +9,10 @@ hook.Add("player_connect", "DiscordRelay::OnConnect", function(Data)
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
 	end
 
-	DiscordRelay.Util.GetWebhook(function(MessageURL)
-		DiscordRelay.Util.SendWebhookMessage(MessageURL, {
-			["username"] = string.Left(Username, 32),
-			["embeds"] = {
-				DiscordRelay.Util.CreateConnectEmbed(SteamID, Username)
-			}
-		})
-	end)
+	DiscordRelay.Util.WebhookAutoSend({
+		["username"] = string.Left(Username, 32),
+		["embeds"] = {
+			DiscordRelay.Util.CreateConnectEmbed(SteamID, Username)
+		}
+	}, util.SteamIDTo64(SteamID))
 end)

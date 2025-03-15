@@ -12,12 +12,10 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 
 	Reason = DiscordRelay.Util.ASCIIFilter(Reason)
 
-	DiscordRelay.Util.GetWebhook(function(MessageURL)
-		DiscordRelay.Util.SendWebhookMessage(MessageURL, {
-			["username"] = string.Left(Username, 32),
-			["embeds"] = {
-				DiscordRelay.Util.CreateDisconnectEmbed(SteamID, Username, Reason)
-			}
-		})
-	end)
+	DiscordRelay.Util.WebhookAutoSend({
+		["username"] = string.Left(Username, 32),
+		["embeds"] = {
+			DiscordRelay.Util.CreateDisconnectEmbed(SteamID, Username, Reason)
+		}
+	}, util.SteamIDTo64(SteamID))
 end)
