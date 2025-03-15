@@ -7,8 +7,8 @@ function DiscordRelay.Commands.RegisterCommand(Name, Callback)
 end
 
 function DiscordRelay.Commands.TryRunCommand(Author, Member, Content)
-	if not DiscordRelay.Config.EnableCommands then return false end
-	if not string.StartsWith(Content, DiscordRelay.Config.CommandPrefix) then return false end
+	if not DiscordRelay.Config.EnableCommands then return end
+	if not string.StartsWith(Content, DiscordRelay.Config.CommandPrefix) then return end
 
 	-- TODO: DiscordRelay.Config.StaffRoles
 	-- TODO: DiscordRelay.Config.AdminsAreStaff
@@ -17,14 +17,12 @@ function DiscordRelay.Commands.TryRunCommand(Author, Member, Content)
 
 	local Arguments = string.Split(CommandStr, " ")
 	local CommandName = table.remove(Arguments, 1)
-	if not isstring(CommandName) or string.len(CommandName) < 1 then return false end
+	if not isstring(CommandName) or string.len(CommandName) < 1 then return end
 
 	local CommandCallback = DiscordRelay.Commands.List[CommandName]
-	if not isfunction(CommandCallback) then return false end
+	if not isfunction(CommandCallback) then return end
 
 	CommandCallback(Author, Member, Arguments)
-
-	return true
 end
 
 DiscordRelay.Util.IncludeFromFolder("commands")
