@@ -12,6 +12,27 @@ function DiscordRelay.Util.RequireModule(Name)
 	end
 end
 
+function DiscordRelay.Util.IncludeFromFolder(Path)
+	local Source = debug.getinfo(2).short_src
+	local SourceDir = string.GetPathFromFilename(Source)
+
+	local SearchDir = Format("lua/%s", Path)
+	local Files = file.Find(Format("%s/*.lua", SearchDir), "GAME")
+
+	if #Files < 1 then
+		SearchDir = Format("%s/%s", SourceDir, Path)
+		Files = file.Find(Format("%s/*.lua", SearchDir), "GAME")
+	end
+
+	for i = 1, #Files do
+		-- include() doesn't like it when it starts with "addons/x" so it has to be done this way :c
+		local FilePath = Format("%s/%s", SearchDir, Files[i])
+		local FileContent = file.Read(FilePath, "GAME")
+
+		RunString(FileContent, FilePath)
+	end
+end
+
 function DiscordRelay.Util.ASCIIFilter(String)
 	return string.gsub(String, "[^\32-\126]", "?")
 end
