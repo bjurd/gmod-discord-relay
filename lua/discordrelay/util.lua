@@ -200,6 +200,10 @@ function DiscordRelay.Util.FetchAvatar(SteamID64, Callback)
 	end)
 end
 
+function DiscordRelay.Util.GetDiscordUserName(Author, Member)
+	return isstring(Member.nick) and Member.nick or (isstring(Author.global_name) and Author.global_name or Author.username)
+end
+
 function DiscordRelay.Util.ColorToDecimal(Color)
 	return bit.lshift(Color.r, 16) + bit.lshift(Color.g, 8) + Color.b
 end
