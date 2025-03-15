@@ -32,3 +32,8 @@ DiscordRelay.Enums.Operations.REQUEST_MEMBERS = 8
 DiscordRelay.Enums.Operations.INVALID_SESSION = 9
 DiscordRelay.Enums.Operations.HELLO = 10
 DiscordRelay.Enums.Operations.HEARTBEAT_ACK = 11
+
+DiscordRelay.Enums.CommandPermissionLevels = DiscordRelay.Enums.CommandPermissionLevels or {}
+DiscordRelay.Enums.CommandPermissionLevels.ALL_USERS = 0
+DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY = 1
+DiscordRelay.Enums.CommandPermissionLevels.ADMIN_ONLY = 2

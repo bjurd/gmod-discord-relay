@@ -1,4 +1,4 @@
-DiscordRelay.Commands.RegisterCommand("status", function(Author, Member, Arguments)
+DiscordRelay.Commands.RegisterCommand("status", DiscordRelay.Enums.CommandPermissionLevels.ALL_USERS, function(Author, Member, Arguments)
 	DiscordRelay.Util.WebhookAutoSend({
 		["username"] = "Server Status",
 		["embeds"] = {
