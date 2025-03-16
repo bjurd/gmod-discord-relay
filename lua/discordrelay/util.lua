@@ -215,3 +215,19 @@ function DiscordRelay.Util.CreateEmbed(Color, Author, Content)
 		["description"] = Content
 	}
 end
+
+function DiscordRelay.Util.StoreOnObject(Object, Key, Value)
+	if not Object.DiscordRelay then
+		Object.DiscordRelay = {}
+	end
+
+	Object.DiscordRelay[Key] = Value
+end
+
+function DiscordRelay.Util.GetFromObject(Object, Key)
+	if not Object.DiscordRelay then
+		return nil
+	end
+
+	return Object.DiscordRelay[Key]
+end

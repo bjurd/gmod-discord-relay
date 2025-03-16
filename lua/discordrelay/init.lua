@@ -2,6 +2,7 @@ DiscordRelay = DiscordRelay or {}
 
 util.AddNetworkString("DiscordRelay::Message")
 
+include("clientfiles.lua")
 include("util.lua")
 
 DiscordRelay.Util.RequireModule("gwsockets")
