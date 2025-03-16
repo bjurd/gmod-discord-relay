@@ -128,13 +128,13 @@ function DiscordRelay.Util.GetWebhook(Callback)
 	})
 end
 
-function DiscordRelay.Util.CheckWebhookMessage(MessageURL, MessageData)
+function DiscordRelay.Util.CheckWebhookMessage(MessageData)
 	return function(Code)
 		-- Webhook cache went invalid, reobtain
 		if Code == 404 then
 			DiscordRelay.Socket.WebhookMessageURL = nil
 
-			DiscordRelay.Util.GetWebhook(function()
+			DiscordRelay.Util.GetWebhook(function(MessageURL)
 				DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData, true)
 			end)
 		end
@@ -158,7 +158,7 @@ function DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData, NoRetry)
 
 		["body"] = MessageBody,
 
-		["success"] = NoRetry and DiscordRelay.Util.NoOp or DiscordRelay.Util.CheckWebhookMessage(MessageURL, MessageData),
+		["success"] = NoRetry and DiscordRelay.Util.NoOp or DiscordRelay.Util.CheckWebhookMessage(MessageData),
 		["failed"] = DiscordRelay.Util.NoOp
 	})
 end
