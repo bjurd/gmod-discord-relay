@@ -24,6 +24,8 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 	local Result = table.remove(Results, 1)
 
 	if Result ~= true then
+		local ErrorMessage = #Results > 0 and table.remove(Results, 1) or "Unknown Error"
+
 		DiscordRelay.Util.WebhookAutoSend({
 			["username"] = "Lua Error",
 			["embeds"] = {
@@ -31,7 +33,7 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 					Color(255, 0, 0),
 					"Lua Runtime Error",
 
-					Format("```\n%s\n```", Result)
+					Format("```\n%s\n```", ErrorMessage)
 				)
 			}
 		})
