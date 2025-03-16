@@ -55,7 +55,7 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 					Color(0, 255, 0),
 					"Lua Runtime Results",
 
-					Format("```\n%s\n```", DiscordRelay.Util.MarkdownEscape(Returns))
+					Format("```\n%s\n```", Returns)
 				)
 			}
 		})
@@ -67,7 +67,7 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 					Color(0, 255, 0),
 					"Ran Lua on Server",
 
-					Format("```\n%s\n```", DiscordRelay.Util.MarkdownEscape(Lua))
+					Format("```\n%s\n```", Lua)
 				)
 			}
 		})
