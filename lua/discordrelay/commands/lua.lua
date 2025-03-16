@@ -67,7 +67,7 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 					Color(0, 255, 0),
 					"Ran Lua on Server",
 
-					Format("```\n%s\n```", Lua)
+					Format("```lua\n%s\n```", Lua)
 				)
 			}
 		})
