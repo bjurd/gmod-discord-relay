@@ -8,7 +8,6 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 
 	if DiscordRelay.Config.FilterUsernames then
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
-		Username = DiscordRelay.Util.MarkdownEscape(Username)
 	end
 
 	Reason = DiscordRelay.Util.ASCIIFilter(Reason)

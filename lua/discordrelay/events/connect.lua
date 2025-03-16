@@ -7,7 +7,6 @@ hook.Add("player_connect", "DiscordRelay::OnConnect", function(Data)
 
 	if DiscordRelay.Config.FilterUsernames then
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
-		Username = DiscordRelay.Util.MarkdownEscape(Username)
 	end
 
 	local Description = Format("%s connected", Username)
