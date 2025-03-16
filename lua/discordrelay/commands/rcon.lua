@@ -4,5 +4,17 @@ DiscordRelay.Commands.RegisterCommand("rcon", DiscordRelay.Enums.CommandPermissi
 
 	if IsConCommandBlocked(Command) then return end
 
+	DiscordRelay.Util.WebhookAutoSend({
+		["username"] = "RCon Results",
+		["embeds"] = {
+			DiscordRelay.Util.CreateEmbed(
+				Color(0, 255, 0),
+				"Ran Command on Server",
+
+				Format("```\n%s\n```", table.concat(Arguments, " "))
+			)
+		}
+	})
+
 	RunConsoleCommand(unpack(Arguments))
 end)
