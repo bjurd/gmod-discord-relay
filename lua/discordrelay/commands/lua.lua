@@ -31,7 +31,7 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 					Color(255, 0, 0),
 					"Lua Runtime Error",
 
-					Format("```\n%s\n```", A)
+					Format("```\n%s\n```", Result)
 				)
 			}
 		})
