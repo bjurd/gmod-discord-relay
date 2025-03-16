@@ -11,7 +11,8 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 				DiscordRelay.Util.CreateEmbed(
 					Color(255, 0, 0),
 					"Lua Compilation Error",
-					LuaFn
+
+					Format("```\n%s\n```", LuaFn)
 				)
 			}
 		})
@@ -28,7 +29,8 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 				DiscordRelay.Util.CreateEmbed(
 					Color(255, 0, 0),
 					"Lua Runtime Error",
-					A
+
+					Format("```\n%s\n```", A)
 				)
 			}
 		})
