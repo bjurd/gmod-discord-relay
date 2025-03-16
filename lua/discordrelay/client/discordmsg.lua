@@ -5,5 +5,5 @@ net.Receive("DiscordRelay::Message", function()
 	local Username = net.ReadString()
 	local Content = net.ReadString()
 
-	chat.AddText(PrefixColor, "[Discord] ", Color, Username, ": ", color_white, Content)
+	chat.AddText(PrefixColor, "[Discord] ", Color, Username, color_white, ": ", Content)
 end)
