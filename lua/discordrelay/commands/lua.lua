@@ -20,7 +20,8 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 		return
 	end
 
-	local Result, A, B, C, D, E, F = pcall(LuaFn)
+	local Results = { pcall(LuaFn) }
+	local Result = table.remove(Results, 1)
 
 	if Result ~= true then
 		DiscordRelay.Util.WebhookAutoSend({
@@ -38,17 +39,12 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 		return
 	end
 
-	if A ~= nil then
-		local Returns = {
-			A ~= nil and tostring(A) or nil,
-			B ~= nil and tostring(B) or nil,
-			C ~= nil and tostring(C) or nil,
-			D ~= nil and tostring(D) or nil,
-			E ~= nil and tostring(E) or nil,
-			F ~= nil and tostring(F) or nil
-		}
+	if #Results > 0 then
+		for i = 1, #Results do
+			Results[i] = tostring(Results[i])
+		end
 
-		Returns = table.concat(Returns, ", ")
+		Results = table.concat(Results, ", ")
 
 		DiscordRelay.Util.WebhookAutoSend({
 			["username"] = "Lua Results",
@@ -57,7 +53,7 @@ DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissio
 					Color(0, 255, 0),
 					"Lua Runtime Results",
 
-					Format("```\n%s\n```", Returns)
+					Format("```\n%s\n```", Results)
 				)
 			}
 		})
