@@ -15,6 +15,10 @@ hook.Add("player_say", "DiscordRelay::OnChatMessage", function(Data)
 
 		if IsValid(Sender) then
 			Username = Sender:Nick()
+
+			if string.len(Username) < 1 then
+				Username = Format("Player (%s)", Sender:SteamID())
+			end
 		else
 			Username = "???"
 		end
