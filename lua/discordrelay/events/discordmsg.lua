@@ -17,10 +17,15 @@ hook.Add("DiscordRelay::DispatchEvent", "DiscordRelay::OnDiscordMessage", functi
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
 	end
 
-	net.Start("DiscordRelay::Message") -- TODO: Compression
-		net.WriteString(Username)
-		net.WriteString(Content)
-	net.Broadcast()
+	DiscordRelay.Util.GetUserRoleColor(Member, function(Color)
+		Color = Color or color_white
+
+		net.Start("DiscordRelay::Message") -- TODO: Compression
+			net.WriteColor(Color, false)
+			net.WriteString(Username)
+			net.WriteString(Content)
+		net.Broadcast()
+	end)
 
 	DiscordRelay.Commands.TryRunCommand(Author, Member, Content)
 end)

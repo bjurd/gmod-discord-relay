@@ -4,6 +4,8 @@ DiscordRelay.Util.NoOp = function() return end
 
 DiscordRelay.Util.AvatarCache = DiscordRelay.Util.AvatarCache or {}
 
+DiscordRelay.Util.RoleCache = DiscordRelay.Util.RoleCache or {}
+
 function DiscordRelay.Util.RequireModule(Name)
 	if not util.IsBinaryModuleInstalled(Name) then
 		error(Format("Binary module %s is not installed for Discord Relay!", Name))
@@ -200,12 +202,109 @@ function DiscordRelay.Util.FetchAvatar(SteamID64, Callback)
 	end)
 end
 
+function DiscordRelay.Util.FetchGuildRoles(Callback, Force)
+	if not Force and next(DiscordRelay.Util.RoleCache) then
+		Callback(DiscordRelay.Util.RoleCache)
+		return
+	end
+
+	local RoleURL = Format("https://discord.com/api/v%d/guilds/%s/roles", DiscordRelay.Config.API, DiscordRelay.Config.GuildID)
+
+	CHTTP({
+		["url"] = RoleURL,
+		["method"] = "GET",
+
+		["headers"] = {
+			["Authorization"] = Format("Bot %s", DiscordRelay.Config.Token)
+		},
+
+		["success"] = function(Code, Body)
+			local Roles = util.JSONToTable(Body) or {}
+			local Dict = {}
+
+			for i = 1, #Roles do
+				Dict[Roles[i].id] = Roles[i]
+			end
+
+			DiscordRelay.Util.RoleCache = Dict
+
+			Callback(Dict)
+		end,
+
+		["failed"] = function(err)
+			Callback(nil)
+		end
+	})
+end
+
+function DiscordRelay.Util.MemberRolesCached(Member, Dict)
+	if not Member.roles then return true end
+
+	for i = 1, #Member.roles do
+		local ID = Member.roles[i]
+
+		if not Dict[ID] then
+			return false
+		end
+	end
+
+	return true
+end
+
+function DiscordRelay.Util.GetUserRoleColor(Member, Callback)
+	if not Member.roles or #Member.roles < 1 then
+		Callback(nil)
+		return
+	end
+
+	local function ProcessRoles(Dict)
+		local BestRole = nil
+
+		for i = 1, #Member.roles do
+			local RoleID = Member.roles[i]
+			local Role = Dict[RoleID]
+
+			if Role and Role.color and Role.color > 0 then
+				if not BestRole or (Role.position and BestRole.position and Role.position > BestRole.position) then
+					BestRole = Role
+				end
+			end
+		end
+
+		if BestRole then
+			Callback(DiscordRelay.Util.DecimalToColor(BestRole.color))
+		else
+			Callback(nil)
+		end
+	end
+
+	if next(DiscordRelay.Util.RoleCache) and DiscordRelay.Util.MemberRolesCached(Member, DiscordRelay.Util.RoleCache) then
+		ProcessRoles(DiscordRelay.Util.RoleCache)
+	else
+		DiscordRelay.Util.FetchGuildRoles(function(Dict)
+			if Dict then
+				ProcessRoles(Dict)
+			else
+				Callback(nil)
+			end
+		end, true)
+	end
+end
+
 function DiscordRelay.Util.GetDiscordUserName(Author, Member)
 	return isstring(Member.nick) and Member.nick or (isstring(Author.global_name) and Author.global_name or Author.username)
 end
 
 function DiscordRelay.Util.ColorToDecimal(Color)
 	return bit.lshift(Color.r, 16) + bit.lshift(Color.g, 8) + Color.b
+end
+
+function DiscordRelay.Util.DecimalToColor(Decimal)
+	local R = bit.rshift(Decimal, 16) % 256
+	local G = bit.band(bit.rshift(Decimal, 8), 0xFF)
+	local B = bit.band(Decimal, 0xFF)
+
+	return Color(R, G, B)
 end
 
 function DiscordRelay.Util.CreateEmbed(Color, Author, Content)
