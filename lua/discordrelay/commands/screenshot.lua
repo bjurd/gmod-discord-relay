@@ -16,8 +16,6 @@ DiscordRelay.NetStream.Receive("DiscordRelay::Screenshot", function(Data, Sender
 
 	local Size = string.len(Data)
 
-	print(string.NiceSize(Size))
-
 	if Size <= 1 then
 		DiscordRelay.Util.WebhookAutoSend({
 			["username"] = "Screenshot",
