@@ -1,11 +1,11 @@
 util.AddNetworkString("DiscordRelay::Screenshot")
 
-net.Receive("DiscordRelay::Screenshot", function(Length, Sender)
-	if not DiscordRelay.Util.GetFromObject(Sender, "ScreenShot::Waiting") then
+DiscordRelay.NetStream.Receive("DiscordRelay::Screenshot", function(Data, Sender)
+	if not DiscordRelay.Util.GetFromObject(Sender, "Screenshot::Waiting") then
 		return
 	end
 
-	DiscordRelay.Util.StoreOnObject(Sender, "ScreenShot::Waiting", false)
+	DiscordRelay.Util.StoreOnObject(Sender, "Screenshot::Waiting", false)
 
 	local Username = Sender:GetName()
 
@@ -14,12 +14,11 @@ net.Receive("DiscordRelay::Screenshot", function(Length, Sender)
 		Username = DiscordRelay.Util.MarkdownEscape(Username)
 	end
 
-	Length = Length / 8
+	local Size = string.len(Data)
 
-	local Data = net.ReadData(Length)
-	Data = util.Decompress(Data)
+	print(string.NiceSize(Size))
 
-	if Length < 1 or string.len(Data) <= 1 then
+	if Size <= 1 then
 		DiscordRelay.Util.WebhookAutoSend({
 			["username"] = "Screenshot",
 			["content"] = Format("Got invalid screenshot data from %s (%s)", Username, Sender:SteamID())
@@ -32,8 +31,8 @@ net.Receive("DiscordRelay::Screenshot", function(Length, Sender)
 		["content"] = "",
 		["embeds"] = {
 			{
-				["title"] = "Screenshot",
-				["description"] = Format("Screenshot from %s (%s)", Username, Sender:SteamID()),
+				["title"] = Sender:SteamID(),
+				["description"] = Format("Screenshot from %s (%s)", Username, string.NiceSize(Size)),
 				["image"] = { ["url"] = "attachment://screenshot.jpeg" }
 			}
 		}
@@ -95,7 +94,7 @@ local function ScreenshotCmd(Author, Member, Arguments)
 		return
 	end
 
-	DiscordRelay.Util.StoreOnObject(Target, "ScreenShot::Waiting", true)
+	DiscordRelay.Util.StoreOnObject(Target, "Screenshot::Waiting", true)
 
 	net.Start("DiscordRelay::Screenshot")
 	net.Send(Target)

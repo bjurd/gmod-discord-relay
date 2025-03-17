@@ -13,6 +13,7 @@ include("config.lua")
 
 -- If this hook is called then we're good
 hook.Add("InitPostEntity", "DiscordRelay::Init", function()
+	include("discordrelay/netstream.lua")
 	include("discordrelay/events.lua")
 	include("discordrelay/commands.lua")
 	include("discordrelay/socket.lua")
