@@ -2,6 +2,8 @@ DiscordRelay.Commands = DiscordRelay.Commands or {}
 
 DiscordRelay.Commands.List = DiscordRelay.Commands.List or {}
 
+DiscordRelay.Commands.AliasList = DiscordRelay.Commands.AliasList or {}
+
 function DiscordRelay.Commands.RegisterCommand(Name, Description, PermissionLevel, Callback)
 	if istable(DiscordRelay.Commands.List[Name]) then
 		ErrorNoHaltWithStack(Format("Overwriting relay command %s!", Name))
@@ -11,6 +13,15 @@ function DiscordRelay.Commands.RegisterCommand(Name, Description, PermissionLeve
 	DiscordRelay.Commands.List[Name].Description = string.Trim(Description)
 	DiscordRelay.Commands.List[Name].PermissionLevel = PermissionLevel
 	DiscordRelay.Commands.List[Name].Callback = Callback
+end
+
+function DiscordRelay.Commands.RegisterAlias(Name, Alias)
+	if not istable(DiscordRelay.Commands.List[Name]) then
+		error(Format("Tried to alias non-existence command %s as %s", Name, Alias))
+		return
+	end
+
+	DiscordRelay.Commands.AliasList[Alias] = DiscordRelay.Commands.List[Name]
 end
 
 function DiscordRelay.Commands.MemberIsStaff(Member)
@@ -42,7 +53,7 @@ function DiscordRelay.Commands.TryRunCommand(Author, Member, Content)
 	local CommandName = table.remove(Arguments, 1)
 	if not isstring(CommandName) or string.len(CommandName) < 1 then return end
 
-	local CommandData = DiscordRelay.Commands.List[CommandName]
+	local CommandData = DiscordRelay.Commands.List[CommandName] or DiscordRelay.Commands.AliasList[CommandName]
 	if not istable(CommandData) then return end
 
 	local PermissionLevel = CommandData.PermissionLevel

@@ -99,4 +99,4 @@ local function ScreenshotCmd(Author, Member, Arguments)
 end
 
 DiscordRelay.Commands.RegisterCommand("screenshot", "Takes a screenshot of a player's game.", DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY, ScreenshotCmd)
-DiscordRelay.Commands.RegisterCommand("ss", "Takes a screenshot of a player's game.", DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY, ScreenshotCmd)
+DiscordRelay.Commands.RegisterAlias("screenshot", "ss")
