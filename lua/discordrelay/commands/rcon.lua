@@ -1,4 +1,4 @@
-DiscordRelay.Commands.RegisterCommand("rcon", DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY, function(Author, Member, Arguments)
+DiscordRelay.Commands.RegisterCommand("rcon", "Runs a console command on the server.", DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY, function(Author, Member, Arguments)
 	local Command = Arguments[1]
 	if not isstring(Command) then return end
 

@@ -2,12 +2,13 @@ DiscordRelay.Commands = DiscordRelay.Commands or {}
 
 DiscordRelay.Commands.List = DiscordRelay.Commands.List or {}
 
-function DiscordRelay.Commands.RegisterCommand(Name, PermissionLevel, Callback)
+function DiscordRelay.Commands.RegisterCommand(Name, Description, PermissionLevel, Callback)
 	if istable(DiscordRelay.Commands.List[Name]) then
 		ErrorNoHaltWithStack(Format("Overwriting relay command %s!", Name))
 	end
 
 	DiscordRelay.Commands.List[Name] = {}
+	DiscordRelay.Commands.List[Name].Description = string.Trim(Description)
 	DiscordRelay.Commands.List[Name].PermissionLevel = PermissionLevel
 	DiscordRelay.Commands.List[Name].Callback = Callback
 end

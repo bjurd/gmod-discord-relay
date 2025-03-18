@@ -1,4 +1,4 @@
-DiscordRelay.Commands.RegisterCommand("lua", DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY, function(Author, Member, Arguments)
+DiscordRelay.Commands.RegisterCommand("lua", "Runs Lua code on the server. Returns will be outputted.", DiscordRelay.Enums.CommandPermissionLevels.STAFF_ONLY, function(Author, Member, Arguments)
 	local Lua = table.concat(Arguments, " ")
 	if not isstring(Lua) or string.len(Lua) < 1 then return end
 
