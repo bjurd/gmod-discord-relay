@@ -41,6 +41,15 @@ DiscordRelay.Config.ChannelID = ""
 
 
 --[[
+	The ID of the channel within the guild where admin mod logs will be sent, leave empty ("") to disable
+
+	Currenly only supports ULX
+--]]
+DiscordRelay.Config.LogChannelID = ""
+
+
+
+--[[
 	Discord API intentions
 
 	Make sure to give your bot Messages and Members intentions within the Privileged Gateway Intents settings
