@@ -16,13 +16,8 @@ DiscordRelay.Commands.RegisterCommand("help", "Shows the list of Discord command
 				Color(255, 255, 0),
 				"Command List",
 				ConvertCommandList(DiscordRelay.Commands.List)
-			)
-		}
-	})
+			),
 
-	DiscordRelay.Util.WebhookAutoSend({
-		["username"] = "Relay Help",
-		["embeds"] = {
 			DiscordRelay.Util.CreateEmbed(
 				Color(255, 255, 0),
 				"Alias List",
