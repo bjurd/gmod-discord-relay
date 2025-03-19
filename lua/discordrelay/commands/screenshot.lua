@@ -50,7 +50,7 @@ DiscordRelay.NetStream.Receive("DiscordRelay::Screenshot", function(Data, Sender
 
 	local Body = table.concat(Parts, "\r\n")
 
-	DiscordRelay.Util.GetWebhook(function(MessageURL)
+	DiscordRelay.Util.GetWebhook(DiscordRelay.Config.ChannelID, function(MessageURL)
 		CHTTP({
 			["url"] = MessageURL,
 			["method"] = "POST",

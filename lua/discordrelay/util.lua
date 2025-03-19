@@ -2,6 +2,8 @@ DiscordRelay.Util = DiscordRelay.Util or {}
 
 DiscordRelay.Util.NoOp = function() return end
 
+DiscordRelay.Util.WebhookCache = DiscordRelay.Util.WebhookCache or {}
+
 DiscordRelay.Util.AvatarCache = DiscordRelay.Util.AvatarCache or {}
 
 DiscordRelay.Util.RoleCache = DiscordRelay.Util.RoleCache or {}
@@ -43,6 +45,10 @@ function DiscordRelay.Util.MarkdownEscape(String)
 	return string.gsub(String, "([\\%*_%`~>|#])", "\\%1")
 end
 
+function DiscordRelay.Util.GetWebhookID(WebhookURL)
+	return string.match(WebhookURL, "webhooks/(%d+)/")
+end
+
 function DiscordRelay.Util.CreateWebhook(WebhookURL, Callback)
 	local WebhookCreationContent = util.TableToJSON({ ["name"] = "Relay" })
 
@@ -69,9 +75,14 @@ function DiscordRelay.Util.CreateWebhook(WebhookURL, Callback)
 			local WebhookToken = Data.token
 			if not isstring(WebhookID) or not isstring(WebhookToken) then return end
 
-			DiscordRelay.Socket.WebhookMessageURL = Format("https://discord.com/api/webhooks/%s/%s", WebhookID, WebhookToken)
+			local MessageURL = Format("https://discord.com/api/webhooks/%s/%s", WebhookID, WebhookToken)
 
-			Callback(DiscordRelay.Socket.WebhookMessageURL)
+			DiscordRelay.Util.WebhookCache[WebhookID] = {
+				["MessageURL"] = MessageURL,
+				["Data"] = Data
+			}
+
+			Callback(MessageURL)
 		end,
 
 		["failed"] = DiscordRelay.Util.NoOp
@@ -98,9 +109,14 @@ function DiscordRelay.Util.ParseWebhooks(WebhookURL, Callback)
 				continue
 			end
 
-			DiscordRelay.Socket.WebhookMessageURL = Format("https://discord.com/api/webhooks/%s/%s", WebhookID, WebhookToken)
+			local MessageURL = Format("https://discord.com/api/webhooks/%s/%s", WebhookID, WebhookToken)
 
-			Callback(DiscordRelay.Socket.WebhookMessageURL)
+			DiscordRelay.Util.WebhookCache[WebhookID] = {
+				["MessageURL"] = MessageURL,
+				["Data"] = Data[i]
+			}
+
+			Callback(MessageURL)
 
 			return
 		end
@@ -109,13 +125,13 @@ function DiscordRelay.Util.ParseWebhooks(WebhookURL, Callback)
 	end
 end
 
-function DiscordRelay.Util.GetWebhook(Callback)
-	if DiscordRelay.Socket.WebhookMessageURL then
-		Callback(DiscordRelay.Socket.WebhookMessageURL)
+function DiscordRelay.Util.GetWebhook(ChannelID, Callback)
+	if DiscordRelay.Util.WebhookCache[ChannelID] then
+		Callback(DiscordRelay.Util.WebhookCache[ChannelID].MessageURL)
 		return
 	end
 
-	local WebhookURL = Format("https://discord.com/api/v%d/channels/%s/webhooks", DiscordRelay.Config.API, DiscordRelay.Config.ChannelID)
+	local WebhookURL = Format("https://discord.com/api/v%d/channels/%s/webhooks", DiscordRelay.Config.API, ChannelID)
 
 	CHTTP({
 		["url"] = WebhookURL,
@@ -130,11 +146,15 @@ function DiscordRelay.Util.GetWebhook(Callback)
 	})
 end
 
-function DiscordRelay.Util.CheckWebhookMessage(MessageData)
+function DiscordRelay.Util.CheckWebhookMessage(OriginalMessageURL, MessageData)
 	return function(Code)
 		-- Webhook cache went invalid, reobtain
 		if Code == 404 then
-			DiscordRelay.Socket.WebhookMessageURL = nil
+			local WebhookID = DiscordRelay.Util.GetWebhookID(OriginalMessageURL)
+
+			if WebhookID then
+				DiscordRelay.Util.WebhookCache[WebhookID] = nil
+			end
 
 			DiscordRelay.Util.GetWebhook(function(MessageURL)
 				DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData, true)
@@ -160,7 +180,7 @@ function DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData, NoRetry)
 
 		["body"] = MessageBody,
 
-		["success"] = NoRetry and DiscordRelay.Util.NoOp or DiscordRelay.Util.CheckWebhookMessage(MessageData),
+		["success"] = NoRetry and DiscordRelay.Util.NoOp or DiscordRelay.Util.CheckWebhookMessage(MessageURL, MessageData),
 		["failed"] = DiscordRelay.Util.NoOp
 	})
 end
@@ -170,12 +190,12 @@ function DiscordRelay.Util.WebhookAutoSend(MessageData, SteamID64)
 		DiscordRelay.Util.FetchAvatar(SteamID64, function(AvatarURL)
 			MessageData["avatar_url"] = AvatarURL
 
-			DiscordRelay.Util.GetWebhook(function(MessageURL)
+			DiscordRelay.Util.GetWebhook(DiscordRelay.Config.ChannelID, function(MessageURL)
 				DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData)
 			end)
 		end)
 	else
-		DiscordRelay.Util.GetWebhook(function(MessageURL)
+		DiscordRelay.Util.GetWebhook(DiscordRelay.Config.ChannelID, function(MessageURL)
 			DiscordRelay.Util.SendWebhookMessage(MessageURL, MessageData)
 		end)
 	end
