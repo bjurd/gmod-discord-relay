@@ -29,11 +29,10 @@ function DiscordRelay.Util.IncludeFromFolder(Path)
 	end
 
 	for i = 1, #Files do
-		-- include() doesn't like it when it starts with "addons/x" so it has to be done this way :c
 		local FilePath = Format("%s/%s", SearchDir, Files[i])
-		local FileContent = file.Read(FilePath, "GAME")
+		local RelativePath = string.match(FilePath, "lua/(.+)") or FilePath
 
-		RunString(FileContent, FilePath)
+		include(RelativePath)
 	end
 end
 
