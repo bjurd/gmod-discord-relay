@@ -50,9 +50,9 @@ DiscordRelay.Config.LogChannelID = ""
 
 
 --[[
-	The ID of the channel within the guild where admin mod logs will be sent, leave empty ("") to disable
+	The ID of the channel within the guild where Lua errors will be sent, leave empty ("") to disable
 
-	Currenly only supports ULX
+	Currenly only provides serverside errors
 --]]
 DiscordRelay.Config.ErrorChannelID = ""
 
