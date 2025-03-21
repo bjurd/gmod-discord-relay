@@ -1,6 +1,6 @@
 if not istable(ulx) or not isfunction(ulx.logWriteln) then return end
 
-DiscordRelay.Detours.Destroy(ulx.logWriteln)
+ulx.logWriteln = DiscordRelay.Detours.Destroy(ulx.logWriteln)
 
 ulx.logWriteln = DiscordRelay.Detours.Setup(ulx.logWriteln, function(Log)
 	if isstring(DiscordRelay.Config.LogChannelID) and string.len(DiscordRelay.Config.LogChannelID) > 0 then
