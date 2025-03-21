@@ -50,7 +50,7 @@ function DiscordRelay.Commands.TryRunCommand(Author, Member, Content)
 	local CommandStr = string.sub(Content, string.len(DiscordRelay.Config.CommandPrefix) + 1)
 
 	local Arguments = string.Split(CommandStr, " ")
-	local CommandName = table.remove(Arguments, 1)
+	local CommandName = string.lower(table.remove(Arguments, 1))
 	if not isstring(CommandName) or string.len(CommandName) < 1 then return end
 
 	local CommandData = DiscordRelay.Commands.List[CommandName] or DiscordRelay.Commands.AliasList[CommandName]
