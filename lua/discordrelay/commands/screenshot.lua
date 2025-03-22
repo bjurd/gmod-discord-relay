@@ -75,9 +75,19 @@ local function ScreenshotCmd(Author, Member, Arguments)
 	local Target = DiscordRelay.Util.FindPlayer(Username)
 
 	if not IsValid(Target) then
+		if DiscordRelay.Config.FilterUsernames then
+			Username = DiscordRelay.Util.ASCIIFilter(Username)
+		end
+
 		DiscordRelay.Util.WebhookAutoSend({
 			["username"] = "Screenshot",
-			["content"] = "No target found!"
+			["embeds"] = {
+				DiscordRelay.Util.CreateEmbed(
+					Color(255, 0, 0),
+					"Target Not Found",
+					Format("Target %s could not be found", Username)
+				)
+			}
 		})
 
 		return
