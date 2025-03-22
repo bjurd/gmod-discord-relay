@@ -2,7 +2,21 @@ DiscordRelay.Commands.RegisterCommand("rcon", "Runs a console command on the ser
 	local Command = Arguments[1]
 	if not isstring(Command) then return end
 
-	if IsConCommandBlocked(Command) then return end
+	if IsConCommandBlocked(Command) then
+		DiscordRelay.Util.WebhookAutoSend({
+			["username"] = "RCon Results",
+			["embeds"] = {
+				DiscordRelay.Util.CreateEmbed(
+					Color(255, 0, 0),
+					"Command Blocked",
+
+					Format("```\n%s\n```", table.concat(Arguments, " "))
+				)
+			}
+		})
+
+		return
+	end
 
 	DiscordRelay.Util.WebhookAutoSend({
 		["username"] = "RCon Results",
