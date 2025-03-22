@@ -349,3 +349,18 @@ function DiscordRelay.Util.GetFromObject(Object, Key)
 
 	return Object.DiscordRelay[Key]
 end
+
+function DiscordRelay.Util.FindPlayer(Key)
+	local Target = player.GetBySteamID(Key) or player.GetBySteamID64(Key)
+
+	if not Target then
+		for _, Player in player.Iterator() do
+			if string.find(string.lower(Player:GetName()), string.lower(Key)) then
+				Target = Player
+				break
+			end
+		end
+	end
+
+	return Target
+end

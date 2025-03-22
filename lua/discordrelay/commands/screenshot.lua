@@ -72,16 +72,7 @@ local function ScreenshotCmd(Author, Member, Arguments)
 	local Username = Arguments[1]
 	if not isstring(Username) then return end
 
-	local Target = player.GetBySteamID(Username) or player.GetBySteamID64(Username)
-
-	if not IsValid(Target) then
-		for _, Player in player.Iterator() do
-			if string.find(string.lower(Player:GetName()), string.lower(Username)) then
-				Target = Player
-				break
-			end
-		end
-	end
+	local Target = DiscordRelay.Util.FindPlayer(Username)
 
 	if not IsValid(Target) then
 		DiscordRelay.Util.WebhookAutoSend({
