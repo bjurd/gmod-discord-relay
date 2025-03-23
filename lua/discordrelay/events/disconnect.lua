@@ -3,6 +3,7 @@
 gameevent.Listen("player_disconnect")
 hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 	local SteamID = Data.networkid
+	local SteamID64 = util.SteamIDTo64(SteamID)
 	local Username = Data.name
 	local Reason = Data.reason
 
@@ -20,5 +21,7 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 		["embeds"] = {
 			DiscordRelay.Util.CreateEmbed(Color(255, 0, 0), SteamID, Description)
 		}
-	}, util.SteamIDTo64(SteamID))
+	}, SteamID64, function()
+		DiscordRelay.Util.UnCache(SteamID64)
+	end)
 end)

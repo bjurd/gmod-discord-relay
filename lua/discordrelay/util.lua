@@ -229,6 +229,10 @@ function DiscordRelay.Util.FetchAvatar(SteamID64, Callback)
 	end)
 end
 
+function DiscordRelay.Util.UnCache(SteamID64)
+	DiscordRelay.Util.AvatarCache[SteamID64] = nil
+end
+
 function DiscordRelay.Util.FetchGuildRoles(Callback, Force)
 	if not Force and next(DiscordRelay.Util.RoleCache) then
 		Callback(DiscordRelay.Util.RoleCache)
