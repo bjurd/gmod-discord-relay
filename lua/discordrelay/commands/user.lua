@@ -34,7 +34,7 @@ DiscordRelay.Commands.RegisterCommand("user", "Gets information about an online 
 	end
 
 	local Information = Format(
-		"Steam ID: %s\nSteam ID64: %s\nProfile: %s\nConnection Time: %s\n\nUsername: %s\nSteam Name: %s\nNick Name: %s",
+		"**Steam ID**: %s\n**Steam ID64**: %s\n**Profile**: %s\n**Connection Time**: %s\n\n**Username**: %s\n**Steam Name**: %s\n**Nick Name**: %s",
 
 		Target:SteamID(),
 		Target:SteamID64(),
