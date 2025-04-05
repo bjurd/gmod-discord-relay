@@ -30,13 +30,8 @@ DiscordRelay.Commands.RegisterCommand("user", "Gets information about an online 
 	if DiscordRelay.Config.FilterUsernames then
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
 
-		SteamName = DiscordRelay.Util.ASCIIFilter(SteamName)
-		SteamName = DiscordRelay.Util.MarkdownEscape(SteamName)
-		NickName = DiscordRelay.Util.ASCIIFilter(NickName)
-		NickName = DiscordRelay.Util.MarkdownEscape(NickName)
+		-- Steam and Nick shouldn't be filtered
 	end
-
-
 
 	local Information = Format(
 		"Steam ID: %s\nSteam ID64: %s\nProfile: %s\nConnection Time: %s\n\nUsername: %s\nSteam Name: %s\nNick Name: %s",
