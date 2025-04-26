@@ -14,7 +14,7 @@ DiscordRelay.Commands.RegisterCommand("status", "Shows server information.", Dis
 					game.GetMap(),
 					game.GetMapVersion(),
 					player.GetCount(),
-					string.NiceTime(CurTime())
+					string.NiceTime(RealTime())
 				)
 			)
 		}
