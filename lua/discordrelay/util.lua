@@ -376,3 +376,22 @@ function DiscordRelay.Util.FindPlayer(Key)
 
 	return Target
 end
+
+function DiscordRelay.Util.FormatTime(Seconds)
+	local Time = string.FormattedTime(Seconds)
+	local FormattedTime = ""
+
+	if Time.h > 0 then
+		FormattedTime = FormattedTime .. Format("%dh ", Time.h)
+	end
+
+	if Time.m > 0 then
+		FormattedTime = FormattedTime .. Format("%dm ", Time.m)
+	end
+
+	if Time.s > 0 then
+		FormattedTime = FormattedTime .. Format("%ds", Time.s)
+	end
+
+	return string.Trim(FormattedTime)
+end

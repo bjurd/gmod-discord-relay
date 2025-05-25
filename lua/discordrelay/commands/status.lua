@@ -1,4 +1,10 @@
 DiscordRelay.Commands.RegisterCommand("status", "Shows server information.", DiscordRelay.Enums.CommandPermissionLevels.ALL_USERS, function(Author, Member, Arguments)
+	local Uptime = RealTime()
+	local MapTime = CurTime()
+
+	Uptime = DiscordRelay.Util.FormatTime(Uptime)
+	MapTime = DiscordRelay.Util.FormatTime(MapTime)
+
 	DiscordRelay.Util.WebhookAutoSend({
 		["username"] = "Server Status",
 		["embeds"] = {
@@ -15,8 +21,8 @@ DiscordRelay.Commands.RegisterCommand("status", "Shows server information.", Dis
 					game.GetMapVersion(),
 					player.GetCount(),
 					game.MaxPlayers(),
-					string.NiceTime(RealTime()),
-					string.NiceTime(CurTime())
+					Uptime,
+					MapTime
 				)
 			)
 		}
