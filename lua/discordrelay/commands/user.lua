@@ -27,6 +27,10 @@ DiscordRelay.Commands.RegisterCommand("user", "Gets information about an online 
 	local SteamName = Target:Name() -- TODO: Steam API
 	local NickName = Target:Nick()
 
+	if string.len(Username) < 1 then
+		Username = Format("Player (%s)", Sender:SteamID())
+	end
+
 	if DiscordRelay.Config.FilterUsernames then
 		Username = DiscordRelay.Util.ASCIIFilter(Username)
 
