@@ -7,13 +7,14 @@ DiscordRelay.Commands.RegisterCommand("status", "Shows server information.", Dis
 				GetHostName(),
 
 				Format(
-					"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d)\n**Player Count**: %d\n**Uptime**: %s\n**Map Time**: %s",
+					"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d)\n**Player Count**: %d / %d\n**Uptime**: %s\n**Map Time**: %s",
 
 					game.GetIPAddress(),
 					gmod.GetGamemode().Name,
 					game.GetMap(),
 					game.GetMapVersion(),
 					player.GetCount(),
+					game.MaxPlayers(),
 					string.NiceTime(RealTime()),
 					string.NiceTime(CurTime())
 				)
