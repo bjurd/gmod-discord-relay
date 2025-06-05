@@ -43,7 +43,7 @@ DiscordRelay.Commands.RegisterCommand("user", "Gets information about an online 
 		Target:SteamID(),
 		Target:SteamID64(),
 		Format("https://steamcommunity.com/profiles/%s", Target:SteamID64()),
-		string.NiceTime(Target:TimeConnected()),
+		DiscordRelay.Util.FormatTime(Target:TimeConnected()),
 
 		Username,
 		SteamName,
