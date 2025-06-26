@@ -25,7 +25,7 @@ function NetStream.Send(Receiver, MessageName, Data)
 		end
 
 		if CurTime() - NetStream.LastSendTime < 1 and NetStream.BytesQueued > 50000 then
-			timer.Simple(0.1, SendNextChunk)
+			timer.Simple(0.25, SendNextChunk)
 			return
 		end
 
@@ -54,7 +54,7 @@ function NetStream.Send(Receiver, MessageName, Data)
 
 		ChunkIndex = ChunkIndex + 1
 
-		timer.Simple(0, SendNextChunk)
+		timer.Simple(0.15, SendNextChunk)
 	end
 
 	SendNextChunk()
