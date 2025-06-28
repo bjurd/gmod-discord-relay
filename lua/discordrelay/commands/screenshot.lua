@@ -1,6 +1,6 @@
 util.AddNetworkString("DiscordRelay::Screenshot")
 
-DiscordRelay.NetStream.Receive("DiscordRelay::Screenshot", function(Data, Sender)
+net.Receive("DiscordRelay::Screenshot", function(_, Sender)
 	if not DiscordRelay.Util.GetFromObject(Sender, "Screenshot::Waiting") then
 		return
 	end
@@ -14,58 +14,35 @@ DiscordRelay.NetStream.Receive("DiscordRelay::Screenshot", function(Data, Sender
 		Username = DiscordRelay.Util.MarkdownEscape(Username)
 	end
 
-	local Size = string.len(Data)
+	local URL = net.ReadString()
 
-	if Size <= 1 then
+	if not isstring(URL) or not string.match(URL, "^https://litter%.catbox%.moe/[%w%._-]+%.jpeg$") then -- TODO: Validate URL properly
 		DiscordRelay.Util.WebhookAutoSend({
 			["username"] = "Screenshot",
-			["content"] = Format("Got invalid screenshot data from %s (%s)", Username, Sender:SteamID())
+			["embeds"] = {
+				DiscordRelay.Util.CreateEmbed(
+					Color(255, 0, 0),
+					"Bad Response",
+					Format("Target %s replied with a bad URL", Username)
+				)
+			}
 		})
 
 		return
 	end
 
-	local Payload = { -- Build util not this advanced yet
+	DiscordRelay.Util.WebhookAutoSend({
+		["username"] = "Screenshot",
 		["content"] = "",
 		["embeds"] = {
 			{
 				["title"] = Sender:SteamID(),
-				["description"] = Format("Screenshot from %s (%s)", Username, string.NiceSize(Size)),
-				["image"] = { ["url"] = "attachment://screenshot.jpeg" }
+				["description"] = Format("Screenshot from %s", Username),
+				["image"] = { ["url"] = URL },
+				["footer"] = { ["text"] = "Image only valid for the next hour" }
 			}
 		}
-	}
-
-	local Parts = {}
-
-	table.insert(Parts, "------DiscordRelayBoundary")
-	table.insert(Parts, "Content-Disposition: form-data; name=\"payload_json\"\r\n")
-	table.insert(Parts, util.TableToJSON(Payload))
-
-	table.insert(Parts, "------DiscordRelayBoundary")
-	table.insert(Parts, "Content-Disposition: form-data; name=\"file\"; filename=\"screenshot.jpeg\"")
-	table.insert(Parts, "Content-Type: image/jpeg\r\n")
-	table.insert(Parts, Data)
-	table.insert(Parts, "------DiscordRelayBoundary--\r\n" )
-
-	local Body = table.concat(Parts, "\r\n")
-
-	DiscordRelay.Util.GetWebhook(DiscordRelay.Config.ChannelID, function(MessageURL)
-		CHTTP({
-			["url"] = MessageURL,
-			["method"] = "POST",
-
-			["headers"] = {
-				["Content-Type"] = "multipart/form-data; boundary=----DiscordRelayBoundary",
-				["Content-Length"] = string.len(Body)
-			},
-
-			["body"] = Body,
-
-			["success"] = DiscordRelay.Util.NoOp,
-			["failed"] = DiscordRelay.Util.NoOp
-		})
-	end)
+	})
 end)
 
 local function ScreenshotCmd(Author, Member, Arguments)
