@@ -58,6 +58,7 @@ local function UploadScreenshot(Data)
 			["Content-Length"] = string.len(Body)
 		},
 
+		["type"] = "multipart/form-data; boundary=DiscordRelayBoundary",
 		["body"] = Body,
 
 		["success"] = SendScreenshot,
