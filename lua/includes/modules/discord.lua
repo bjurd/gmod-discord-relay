@@ -15,12 +15,18 @@ function package.discord(Module)
 	setmetatable(Module, PackageMeta)
 end
 
+local developer = GetConVar("developer")
+
 --- Checks if developer mode is enabled
 --- @return boolean IsDeveloper Whether or not the developer ConVar value is nonzero
 function IsDeveloper()
-	local developer = GetConVar("developer")
+	return developer and developer:GetBool() or false
+end
 
-	return developer and developer:GetBool()
+--- Checks if higher developer mode is enabled, used for more spammy events
+--- @return boolean IsDeveloper Whether or not the developer ConVar value is >1
+function IsHigherDeveloper()
+	return developer and developer:GetInt() > 1 or false
 end
 
 --- Returns a filename from a string without the extension (because string.GetFileFromFilename includes the extension)

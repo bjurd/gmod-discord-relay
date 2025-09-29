@@ -46,3 +46,13 @@ function DevLog(Type, Message, ...)
 
 	Log(Type, Message, ...)
 end
+
+--- Sends a message to the console of the given type only if higher developer mode is enabled
+--- @param Type number The type of message, use LOG_ enums
+--- @param Message string The message, supports string formatting
+--- @param ... any Format arguments
+function HighDevLog(Type, Message, ...)
+	if not IsHigherDeveloper() then return end
+
+	Log(Type, Message, ...)
+end
