@@ -51,6 +51,13 @@ function ROLE:GetPermissionValue()
 	return self.Permissions
 end
 
+--- Returns if the role has a permission
+--- @param Permission number Permission bit flag
+--- @return boolean
+function ROLE:HasPermission(Permission)
+	return bigint.IsBitflagSet(self:GetPermissionValue(), Permission)
+end
+
 --- Returns the Color as a decimal
 --- @return number
 function ROLE:GetColorDecimal()

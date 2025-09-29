@@ -14,7 +14,7 @@ hook.Add("DiscordRelay::DispatchEvent", "SendOnlineMessage", function(Event, Soc
 	discord.roles.GetGuildRoles(relay.conn.Instance, "1138420436397473852", function(Roles)
 		for i = 1, #Roles do
 			local Role = Roles[i]
-			print(i, Role, discord.bigint.IsBitflagSet(Role:GetPermissionValue(), PERMISSION_ADMINISTRATOR))
+			print(i, Role, Role:HasPermission(PERMISSION_ADMINISTRATOR))
 		end
 	end)
 end)
