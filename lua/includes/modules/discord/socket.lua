@@ -34,11 +34,11 @@ end
 --- @param self WEBSOCKET A GWSockets socket instance
 --- @param Message string The received message in JSON
 function SOCKET_OnMessage(self, Message)
-	Message = util.Decompress(Message) or Message
-
-	logging.DevLog(LOG_NORMAL, "Socket message: %s", Message)
-
 	local MessageData = util.JSONToTable(Message)
+
+	-- There's some strange limitation when passing the Message directly in to Format
+	-- Also LuaLS is losing its mind over the arguments I'm passing in
+	logging.DevLog(LOG_NORMAL, "Socket message: %s", table.ToString(MessageData, nil, false))
 
 	if not MessageData then
 		logging.DevLog(LOG_ERROR, "Socket got non-JSON message: %s", tostring(Message))
