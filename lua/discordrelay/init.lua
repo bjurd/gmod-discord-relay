@@ -1,9 +1,22 @@
+relay = relay or {}
+
 require("discord")
 
-local Socket = discord.socket.Create(discord.versioning.GetLatestAPI())
+include("config.lua")
 
-if Socket then
-	discord.socket.Connect(Socket, "NzgxNzE0NzkyMTM3NDkwNDUz.GcOESu.ymP-FW0VBnmkQ0Vb--T4rT3CfWJbIa14pEuE8o")
+include("util.lua")
+include("connection.lua")
 
-	include("events/ready.lua")
-end
+include("events/ready.lua")
+include("events/discordmsg.lua")
+
+hook.Add("InitPostEntity", "DiscordRelay::InitialBroadcast", function()
+	local sv_hibernate_think = GetConVar("sv_hibernate_think")
+
+	if sv_hibernate_think and not sv_hibernate_think:GetBool() then
+		-- Piss
+		discord.logging.Log(LOG_WARNING, "sv_hibernate_think is disabled, relay processing will halt whilst the server is empty!")
+	end
+
+	relay.conn.Initialize()
+end)
