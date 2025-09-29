@@ -1,0 +1,25 @@
+{
+	"Lua.workspace.library": [
+		"${addons}/garrysmod/module/library"
+	],
+	"Lua.runtime.version": "LuaJIT",
+	"Lua.runtime.special": {
+		"include": "dofile",
+		"IncludeCS": "dofile"
+	},
+	"Lua.runtime.nonstandardSymbol": [
+		"continue",
+		"&&",
+		"||",
+		"!=",
+		"!",
+		"//",
+		"/**/"
+	],
+	"Lua.diagnostics.disable": [
+		"undefined-global",
+		"lowercase-global", // Why is this even a thing? Who gives a fuck??
+		"duplicate-set-field"
+	],
+	"Lua.workspace.checkThirdParty": false
+}
