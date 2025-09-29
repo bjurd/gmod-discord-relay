@@ -1,22 +1,9 @@
-DiscordRelay = DiscordRelay or {}
+require("discord")
 
-util.AddNetworkString("DiscordRelay::Message")
+local Socket = discord.socket.Create(discord.versioning.GetLatestAPI())
 
-include("clientfiles.lua")
-include("util.lua")
+if Socket then
+	discord.socket.Connect(Socket, "NzgxNzE0NzkyMTM3NDkwNDUz.GcOESu.ymP-FW0VBnmkQ0Vb--T4rT3CfWJbIa14pEuE8o")
 
-DiscordRelay.Util.RequireModule("gwsockets")
-DiscordRelay.Util.RequireModule("chttp")
-
-include("enums.lua")
-include("config.lua")
-
--- If this hook is called then we're good
-hook.Add("InitPostEntity", "DiscordRelay::Init", function()
-	include("discordrelay/detours.lua")
-	include("discordrelay/events.lua")
-	include("discordrelay/commands.lua")
-	include("discordrelay/socket.lua")
-
-	DiscordRelay.Socket.Setup()
-end)
+	include("events/ready.lua")
+end

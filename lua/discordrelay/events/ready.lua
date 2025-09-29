@@ -1,18 +1,18 @@
-local Readied = false
+hook.Add("DiscordRelay::DispatchEvent", "SendOnlineMessage", function(Event, Socket)
+	if Event ~= "READY" then return end
 
-hook.Add("DiscordRelay::DispatchEvent", "DiscordRelay::Ready", function(Type, Message, Data)
-	if Type ~= "READY" then return end
+	local Message = discord.messages.BeginMessage()
+		:WithContent("testing testing 123")
+		:WithEmbed()
+			:WithTitle("is this thing on?")
+			:WithDescription("heelllo world this is a super duper ultra crazy mega bonkers long piece of text because it's in the description it can be like that hurray")
+			:WithFooter("hahawhawhahawhawhawhawhawhawhaw")
+			:WithColor(color_white)
+			:End()
+		:WithEmbed()
+			:WithDescription("more than 1 (one)?")
+			:WithColorRGB(255, 0, 0)
+			:End()
 
-	DiscordRelay.Socket.SessionID = Message.session_id
-
-	if not Readied then
-		DiscordRelay.Util.WebhookAutoSend({
-			["username"] = "Server Status",
-			["embeds"] = {
-				DiscordRelay.Util.CreateEmbed(Color(0, 255, 0), GetHostName(), "Server is now online!")
-			}
-		})
-
-		Readied = true
-	end
+	discord.messages.SendToChannel(Socket, "1139040735358881923", Message)
 end)
