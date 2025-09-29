@@ -6,7 +6,7 @@ PackageMeta = { __index = function(self, Key) return discord[Key] or _G[Key] end
 --- @param Module table The module table
 function package.discord(Module)
 	if not discord then
-		error("discord module not located!")
+		error("Discord module not located!")
 		return
 	end
 
@@ -23,35 +23,72 @@ function IsDeveloper()
 	return developer and developer:GetBool()
 end
 
---- Loads a discord module within the discord fenv
---- @param Name string The file name with no extension
---- @return ... Whatever the included file returns
-function LoadFile(Name)
-	Name = string.lower(Name)
-	Name = string.GetFileFromFilename(Name)
+--- Returns a filename from a string without the extension (because string.GetFileFromFilename includes the extension)
+--- @param FileName string The file name
+--- @return string
+function GetFilenameNoExtension(FileName)
+	FileName = string.GetFileFromFilename(FileName)
 
-	local Extension = string.GetExtensionFromFilename(Name)
+	local Extension = string.GetExtensionFromFilename(FileName)
 
-	if Extension then -- GetExtensionFromFilename returns nil on failure
-		if IsDeveloper() then
-			ErrorNoHaltWithStack("Do not pass file extensions into LoadFile!") -- This because logging may not exist yet
-		end
-
+	if Extension then
 		local ExtensionLength = string.len(Extension)
 		local ExtensionOffset = -(ExtensionLength + 2)
-		Name = string.sub(Name, 1, ExtensionOffset)
+		FileName = string.sub(FileName, 1, ExtensionOffset)
 	end
 
-	local FilePath = Format("includes/modules/discord/%s.lua", Name)
-	local Loader = CompileFile(FilePath, true)
+	return FileName
+end
+
+--- Loads a Discord module within the Discord fenv
+--- @param Path string The file path with no extension
+--- @return ... Whatever the included file returns
+function LoadFile(Path)
+	Path = string.lower(Path)
+
+	local File = string.GetFileFromFilename(Path)
+	local CleanFile = GetFilenameNoExtension(File)
+	Path = string.GetPathFromFilename(Path)
+
+	if File ~= CleanFile and IsDeveloper() then
+		ErrorNoHaltWithStack("Do not pass file extensions into LoadFile!") -- This because logging may not exist yet
+
+		File = CleanFile
+	end
+
+	local FullPath = Format("includes/modules/discord/%s%s.lua", Path, File)
+	local Loader = CompileFile(FullPath, true)
 
 	if not Loader then
-		error(Format("Tried to LoadFile a non-existant file '%s'", FilePath))
+		error(Format("Tried to LoadFile a non-existant file '%s'", FullPath))
 		return
+	end
+
+	if logging then
+		logging.Log(LOG_SUCCESS, "Loaded Discord module %s", CleanFile)
+	else
+		MsgN("[discordRelay] Loaded early module ", CleanFile)
 	end
 
 	setfenv(Loader, discord)
 	return Loader()
+end
+
+--- Loads a Discord module as a metatable and registers it
+--- @param Name string The file name with no extension
+function LoadObjectFile(Name)
+	local Metatable = LoadFile(Format("objects/%s", Name))
+
+	if not istable(Metatable) then
+		error(Format("Got non-metatable file '%s'", Name))
+		return
+	end
+
+	local MetaName = GetFilenameNoExtension(Name)
+
+	RegisterMetaTable(Format("Discord::%s", MetaName), Metatable)
+
+	logging.Log(LOG_SUCCESS, "Registered OOP object type %s", MetaName)
 end
 
 -- Load our friends
@@ -59,10 +96,17 @@ LoadFile("Enums")
 LoadFile("Logging")
 LoadFile("Versioning")
 LoadFile("Intents")
+LoadFile("Permissions")
 LoadFile("Colors")
+LoadFile("BigInt")
+LoadFile("Cache")
 
-LoadFile("Operations")
+LoadFile("OOP")
+LoadObjectFile("Role")
+
 LoadFile("Socket")
+LoadFile("Operations")
 LoadFile("Messages")
+LoadFile("Roles")
 
-logging.Log(LOG_SUCCESS, "Loaded Discord module")
+logging.Log(LOG_SUCCESS, "Loaded all Discord modules!")
