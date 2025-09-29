@@ -14,16 +14,16 @@ module("messages", package.discord)
 MessageURL = "https://discord.com/api/v%d/channels/%s/messages"
 
 function MESSAGE_Success(Code)
-	if Code == 200 then
-		logging.DevLog(LOG_SUCCESS, "Successfully POSTed message")
-	else
-		-- HTTP is strange...
-		MESSAGE_Fail(Code)
+	if Code ~= 200 then
+		logging.DevLog(LOG_ERROR, "Failed to POST message, code %d", Code)
+		return
 	end
+
+	logging.DevLog(LOG_SUCCESS, "Successfully POSTed message")
 end
 
-function MESSAGE_Fail(Code)
-	logging.DevLog(LOG_ERROR, "Failed to POST message, code %d", Code)
+function MESSAGE_Fail(Reason)
+	logging.DevLog(LOG_ERROR, "Failed to POST message, %s", Reason)
 end
 
 --- POSTs a message
