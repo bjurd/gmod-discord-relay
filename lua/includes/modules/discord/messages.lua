@@ -43,7 +43,7 @@ function POSTMessage(Socket, MessageURL, Data)
 			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
-		["type"] = "application/json",
+		["type"] = "application/json", -- There was some bunk ass change in HTTP that made this needed :/
 
 		["body"] = MessageData,
 
@@ -61,6 +61,7 @@ function SendToChannel(Socket, Channel, Data)
 
 	POSTMessage(Socket, MessageURL, Data)
 end
+
 
 
 --[[
