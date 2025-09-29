@@ -109,6 +109,10 @@ LoadFile("Cache")
 
 LoadFile("OOP")
 LoadObjectFile("Role")
+LoadObjectFile("Message")
+LoadObjectFile("EmbedAuthor")
+LoadObjectFile("EmbedFooter")
+LoadObjectFile("Embed")
 
 LoadFile("Socket")
 LoadFile("Operations")

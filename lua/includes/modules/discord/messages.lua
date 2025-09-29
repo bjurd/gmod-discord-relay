@@ -7,10 +7,6 @@ end
 local HTTP = CHTTP or HTTP
 module("messages", package.discord)
 
---- @meta
---- @alias Message table
---- @alias Embed table
-
 MessageURL = "https://discord.com/api/v%d/channels/%s/messages"
 
 function MESSAGE_Success(Code)
@@ -55,119 +51,15 @@ end
 --- Sends a message to a channel
 --- @param Socket WEBSOCKET A GWSockets socket instance
 --- @param Channel string Channel snowflake
---- @param Data table Message data
-function SendToChannel(Socket, Channel, Data)
+--- @param Message Message
+function SendToChannel(Socket, Channel, Message)
 	local MessageURL = Format(MessageURL, Socket.API, Channel)
 
-	POSTMessage(Socket, MessageURL, Data)
+	POSTMessage(Socket, MessageURL, Message:__json())
 end
-
-
-
---[[
-	Message and Embed builders
---]]
-
-MessageMetatable = {}
-MessageMetatable.__index = MessageMetatable
-
-EmbedMetatable = {}
-EmbedMetatable.__index = EmbedMetatable
 
 --- Begins a message builder
---- @return Message Message The created Message object. Only default field is allowed_mentions, set to none
-function BeginMessage()
-	local Message = { ["allowed_mentions"] = { ["parse"] = {} } }
-	setmetatable(Message, MessageMetatable)
-
-	return Message
-end
-
---- Sets Message content
---- @param Content string Message content, limited to 2000 characters
---- @return Message self
-function MessageMetatable:WithContent(Content)
-	self.content = string.sub(tostring(Content), 1, 2000)
-	return self
-end
-
---- Begins an embed builder
---- @return Embed Embed
-function MessageMetatable:WithEmbed()
-	local Embed = {}
-	setmetatable(Embed, EmbedMetatable)
-
-	Embed.Message = self
-
-	return Embed
-end
-
---- Ends an embed builder, adds it to its parent, and returns to the Message stack
---- @return Message Parent
-function EmbedMetatable:End()
-	local Message = self.Message
-	self.Message = nil
-
-	if not Message.embeds then
-		Message.embeds = {}
-	end
-
-	table.insert(Message.embeds, self)
-
-	return Message
-end
-
---- Sets Embed title
---- @param Title string Title content, limited to 64 characters
---- @return Embed self
-function EmbedMetatable:WithTitle(Title)
-	self.title = string.sub(tostring(Title), 1, 64)
-	return self
-end
-
---- Sets Embed description
---- @param Description string Description content, limited to 2000 characters
---- @return Embed self
-function EmbedMetatable:WithDescription(Description)
-	self.description = string.sub(tostring(Description), 1, 2000)
-	return self
-end
-
---- Sets Embed author
---- @param Author table Author data. Name is limited to 32 characters
---- @return Embed self
-function EmbedMetatable:WithAuthor(Author)
-	self.author = table.Copy(Author)
-
-	if isstring(self.author.Name) then
-		self.author.Name = string.sub(self.author.Name, 1, 32)
-	end
-
-	return self
-end
-
---- Sets Embed footer
---- @param Footer string Footer content, limited to 128 characters
---- @return Embed self
-function EmbedMetatable:WithFooter(Footer)
-	self.footer = { ["text"] = string.sub(tostring(Footer), 1, 128) } -- Who tf uses icons in the footer?
-	return self
-end
-
---- Sets Embed color
---- @param Color Color
---- @return Embed self
-function EmbedMetatable:WithColor(Color)
-	self.color = colors.ToDecimal(Color)
-	return self
-end
-
---- Sets Embed color
---- @param R number
---- @param G number
---- @param B number
---- @return Embed self
-function EmbedMetatable:WithColorRGB(R, G, B)
-	self.color = colors.ToDecimalRGB(R, G, B)
-	return self
+--- @return Message Message The created Message object
+function Begin()
+	return oop.CreateNew("Message")
 end
