@@ -65,3 +65,9 @@ config.Messages = {
 	}
 	--]]
 }
+
+
+
+--- Prefix to be used for Discord commands. Set to an empty string ("") to disable commands
+--- Note that this is NOT case sensitive, it will be convered to lowercase during comparison
+config.CommandPrefix = ";"

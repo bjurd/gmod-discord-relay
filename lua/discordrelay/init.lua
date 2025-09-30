@@ -11,6 +11,10 @@ include("events/ready.lua")
 include("events/discordmsg.lua")
 include("events/chatmsg.lua")
 
+include("commands.lua")
+include("commands/help.lua")
+include("events/discordcmd.lua")
+
 hook.Add("InitPostEntity", "DiscordRelay::InitialBroadcast", function()
 	local sv_hibernate_think = GetConVar("sv_hibernate_think")
 

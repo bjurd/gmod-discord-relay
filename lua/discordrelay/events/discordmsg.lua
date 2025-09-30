@@ -1,18 +1,12 @@
 util.AddNetworkString("DiscordRelay::ChatMessage")
 
-hook.Add("DiscordRelay::DispatchEvent", "ReadDiscord", function(Event, Socket, Data)
-	if Event ~= "MESSAGE_CREATE" then return end
-
-	local _, ReadableChannels = relay.conn.FilterChannels("Read")
-	if not ReadableChannels[Data.channel_id] then return end
-
-	local Content = tostring(Data.content)
-	if string.len(Content) < 1 then return end
+hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(Socket, Data)
+	if player.GetCount() < 1 then return end -- :P
 
 	local User = discord.oop.ConstructNew("User", Data.author)
 	local Member = discord.oop.ConstructNew("Member", Data.member)
 
-	discord.roles.GetGuildRoles(relay.conn.Instance, Data.guild_id, function(Roles)
+	discord.roles.GetGuildRoles(Socket, Data.guild_id, function(Roles)
 		-- There's no other endpoint for Role data than this one unfortunately
 		local Highest = Member:GetHighestRole(Roles)
 
@@ -22,7 +16,21 @@ hook.Add("DiscordRelay::DispatchEvent", "ReadDiscord", function(Event, Socket, D
 		net.Start("DiscordRelay::ChatMessage")
 			net.WriteColor(NameColor, false)
 			net.WriteString(Name)
-			net.WriteString(Content)
+			net.WriteString(Data.content)
 		net.Broadcast()
 	end)
+end)
+
+hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::ReadDiscord", function(Event, Socket, Data)
+	if Event ~= "MESSAGE_CREATE" then return end
+
+	local _, ReadableChannels = relay.conn.FilterChannels("Read")
+	if not ReadableChannels[Data.channel_id] then return end
+
+	if not relay.util.IsNonEmptyStr(Data.content) then return end
+
+	local User = discord.oop.ConstructNew("User", Data.author)
+	if User:IsBot() then return end
+
+	hook.Run("DiscordRelay::ProcessDiscordMessage", Socket, Data)
 end)
