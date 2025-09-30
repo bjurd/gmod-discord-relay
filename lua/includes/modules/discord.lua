@@ -113,6 +113,8 @@ LoadObjectFile("Message")
 LoadObjectFile("EmbedAuthor")
 LoadObjectFile("EmbedFooter")
 LoadObjectFile("Embed")
+LoadObjectFile("User")
+LoadObjectFile("Member")
 
 LoadFile("Socket")
 LoadFile("Operations")
