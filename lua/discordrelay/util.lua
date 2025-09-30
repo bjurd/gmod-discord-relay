@@ -42,3 +42,27 @@ function rutil.FormatTime(Seconds)
 
 	return table.concat(Parts, " ")
 end
+
+--- Returns if something is a string and is not empty (0 length)
+--- @param Object any
+--- @return boolean
+function rutil.IsNonEmptyStr(Object)
+	return isstring(Object) and string.len(Object) > 0
+end
+
+--- Returns a Member's name
+--- Goes in order of Nickname, Display Name and Username. Will return the User Snowflake as a final fallback if the username is blank
+--- @param User User
+--- @param Member Member
+--- @return string
+function rutil.GetMemberName(User, Member)
+	local Nickname = Member:GetNickname()
+	local DisplayName = User:GetDisplayName()
+	local Username = User:GetUsername()
+
+	if rutil.IsNonEmptyStr(Nickname) then return Nickname end
+	if rutil.IsNonEmptyStr(DisplayName) then return DisplayName end
+	if rutil.IsNonEmptyStr(Username) then return Username end
+
+	return User:GetID()
+end
