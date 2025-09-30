@@ -7,10 +7,10 @@ end
 local HTTP = CHTTP or HTTP
 module("roles", package.discord)
 
-CacheKey = "RoleCache"
+CacheKey = "RoleCache::%s"
 RoleURL = "https://discord.com/api/v%d/guilds/%s/roles"
 
-function ROLE_Success(Code, Body, Callback)
+function ROLE_Success(Code, Body, GuildID, Callback)
 	if Code ~= 200 then
 		logging.DevLog(LOG_ERROR, "Failed to fetch guild roles, code %d", Code)
 		Callback(nil)
@@ -29,7 +29,8 @@ function ROLE_Success(Code, Body, Callback)
 
 	-- Try to Get first in case requests build up
 	-- TODO: Some kind of request handling system?
-	local Cached = cache.Get(CacheKey) or cache.CreateTimed(CacheKey, 300)
+	local Key = Format(CacheKey, GuildID)
+	local Cached = cache.Get(Key) or cache.CreateTimed(Key, 300)
 
 	-- This is better than running the callback early because requests are async and could get ran with an empty table
 	-- it's better to recompile the list than to risk running dry
@@ -71,7 +72,7 @@ function FetchGuildRoles(Socket, GuildID, Callback)
 		},
 
 		["success"] = function(Code, Body)
-			ROLE_Success(Code, Body, Callback)
+			ROLE_Success(Code, Body, GuildID, Callback)
 		end,
 
 		["failed"] = function(Reason)
@@ -85,7 +86,8 @@ end
 --- @param GuildID string
 --- @param Callback function Only argument is the sequential Role table, nil on failure
 function GetGuildRoles(Socket, GuildID, Callback)
-	local Cached = cache.Get(CacheKey)
+	local Key = Format(CacheKey, GuildID)
+	local Cached = cache.Get(Key)
 
 	if Cached then
 		Callback(Cached)
