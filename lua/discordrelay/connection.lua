@@ -4,6 +4,11 @@ local config = relay.config
 
 --- Creates and connects a websocket to Discord
 function conn.Initialize()
+	if not relay.util.IsNonEmptyStr(config.Token) then
+		discord.logging.Log(LOG_ERROR, "No token provided in relay configuration file, the relay will be nonfunctional!")
+		return
+	end
+
 	if not conn.Instance then
 		conn.Instance = discord.socket.Create(config.API)
 	end
