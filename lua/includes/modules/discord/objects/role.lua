@@ -4,6 +4,7 @@
 --- @field Permissions string
 --- @field Color number
 --- @field Managed boolean
+--- @field Position number
 local ROLE = {}
 ROLE.__index = ROLE
 
@@ -13,6 +14,7 @@ function ROLE:__new()
 	self.Permissions = ""
 	self.Color = 0
 	self.Managed = false
+	self.Position = 0
 end
 
 function ROLE:__constr(Data)
@@ -21,6 +23,7 @@ function ROLE:__constr(Data)
 	self.Permissions = Data.permissions
 	self.Color = Data.color
 	self.Managed = Data.managed
+	self.Position = Data.position
 end
 
 function ROLE:__tostring()
@@ -74,6 +77,12 @@ end
 --- @return boolean
 function ROLE:IsManaged()
 	return self.Managed
+end
+
+--- Returns the role's position
+--- @return number
+function ROLE:GetPosition()
+	return self.Position
 end
 
 return ROLE
