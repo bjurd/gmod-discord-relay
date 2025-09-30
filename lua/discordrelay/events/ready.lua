@@ -12,11 +12,4 @@ hook.Add("DiscordRelay::DispatchEvent", "SendOnlineMessage", function(Event, Soc
 			:End()
 
 	relay.conn.BroadcastMessage(Message)
-
-	discord.roles.GetGuildRoles(relay.conn.Instance, "1138420436397473852", function(Roles)
-		for i = 1, #Roles do
-			local Role = Roles[i]
-			print(i, Role, Role:HasPermission(PERMISSION_ADMINISTRATOR))
-		end
-	end)
 end)
