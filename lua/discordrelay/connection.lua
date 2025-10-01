@@ -70,3 +70,41 @@ function conn.BroadcastMessage(Message)
 		discord.messages.SendToChannel(Socket, ChannelID, Message)
 	end
 end
+
+--- Broadcasts a message to all writeable channel webhooks
+--- @param Message Message
+function conn.BroadcastWebhookMessage(Message)
+	local Socket = conn.Instance
+
+	if not Socket or not Socket:isConnected() then
+		discord.logging.DevLog(LOG_ERROR, "Can't broadcast with an unconnected socket!")
+		return
+	end
+
+	local WriteableChannels = conn.FilterChannels("Write")
+	local Channels = #WriteableChannels
+
+	if Channels < 1 then
+		discord.logging.Log(LOG_WARNING, "There are no channels to broadcast messages to")
+		return
+	end
+
+	for i = 1, Channels do
+		local ChannelID = WriteableChannels[i]
+
+		discord.webhooks.GetChannelWebhooks(Socket, ChannelID, function(Webhooks)
+			local WebhookCount = #Webhooks
+
+			for i = 1, WebhookCount do
+				local Webhook = Webhooks[i]
+				if not Webhook:IsUseable() then continue end
+
+				discord.webhooks.SendToChannel(Socket, Webhook, Message)
+
+				return -- Prevent the log
+			end
+
+			discord.logging.Log(LOG_ERROR, "Couldn't find any useable webhooks to broadcast to for channel %s", ChannelID)
+		end)
+	end
+end

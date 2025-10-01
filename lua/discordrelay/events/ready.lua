@@ -11,5 +11,5 @@ hook.Add("DiscordRelay::DispatchEvent", "SendOnlineMessage", function(Event, Soc
 			:WithColorRGB(0, 255, 0)
 			:End()
 
-	relay.conn.BroadcastMessage(Message)
+	relay.conn.BroadcastWebhookMessage(Message)
 end)

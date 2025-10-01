@@ -107,5 +107,45 @@ function GetChannelWebhooks(Socket, ChannelID, Callback)
 	FetchChannelWebhooks(Socket, ChannelID, Callback)
 end
 
+--- POSTs a message to a webhook
+--- @param Socket WEBSOCKET A GWSockets socket instance
+--- @param WebhookURL string URL to POST to
+--- @param Data table Message data
+function POSTMessage(Socket, WebhookURL, Data)
+	local MessageData = util.TableToJSON(Data)
+
+	HTTP({
+		["url"] = WebhookURL,
+		["method"] = "POST",
+
+		["headers"] = {
+			["Content-Type"] = "application/json",
+			["Content-Length"] = tostring(string.len(MessageData)),
+			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
+			["Authorization"] = Format("Bot %s", Socket.Token)
+		},
+		["type"] = "application/json", -- There was some bunk ass change in HTTP that made this needed :/
+
+		["body"] = MessageData,
+
+		["success"] = MESSAGE_Success,
+		["failed"] = MESSAGE_Fail
+	})
+end
+
+--- Sends a message to a channel webhook
+--- @param Socket WEBSOCKET A GWSockets socket instance
+--- @param Webhook Webhook
+--- @param Message Message
+function SendToChannel(Socket, Webhook, Message)
+	if not Webhook:IsUseable() then
+		logging.Log(LOG_ERROR, "Got unusable webhook in SendToChannel")
+		return
+	end
+
+	local WebhookURL = Webhook:GetURL()
+
+	POSTMessage(Socket, WebhookURL, Message:__json())
+end
+
 -- TODO: CreateChannelWebhook
--- TODO: SendMessage
