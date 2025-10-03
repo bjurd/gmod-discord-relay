@@ -34,13 +34,20 @@ function WEBHOOK_GET_Success(Code, Body, ChannelID, Callback)
 	table.Empty(Cached)
 
 	local WebhookCount = #Data
+	local UseableCount = 0 -- Only used for logging purposes
 
 	for i = 1, WebhookCount do
 		local WebhookData = Data[i]
 
 		local Webhook = oop.ConstructNew("Webhook", WebhookData)
 		table.insert(Cached, Webhook)
+
+		if Webhook:IsUseable() then
+			UseableCount = UseableCount + 1
+		end
 	end
+
+	logging.DevLog(UseableCount > 0 and LOG_SUCCESS or LOG_WARNING, "Got %d useable %s for channel %s", UseableCount, strings.Pluralize("webhook", UseableCount), ChannelID)
 
 	Callback(Cached)
 end
@@ -62,6 +69,19 @@ end
 
 function WEBHOOK_POST_Fail(Reason)
 	logging.DevLog(LOG_ERROR, "Failed to POST webhook, %s", Reason)
+end
+
+function WEBHOOK_CREATE_Success(Code, Body, ChannelID, Callback)
+	if Code ~= 200 then
+		logging.DevLog(LOG_ERROR, "Failed to create webhook, code %d", Code)
+		return
+	end
+
+	logging.DevLog(LOG_SUCCESS, "Successfully created webhook")
+end
+
+function WEBHOOK_CREATE_Fail(Reason)
+	logging.DevLog(LOG_ERROR, "Failed to create webhook, %s", Reason)
 end
 
 --- Fetches and creates the webhook cache table, used internally by GetChannelWebhooks
@@ -128,8 +148,8 @@ function POSTMessage(Socket, WebhookURL, Data)
 
 		["body"] = MessageData,
 
-		["success"] = MESSAGE_Success,
-		["failed"] = MESSAGE_Fail
+		["success"] = WEBHOOK_POST_Success,
+		["failed"] = WEBHOOK_POST_Fail
 	})
 end
 
