@@ -98,6 +98,7 @@ function LoadObjectFile(Name)
 end
 
 -- Load our friends
+LoadFile("Strings")
 LoadFile("Enums")
 LoadFile("Logging")
 LoadFile("Versioning")
