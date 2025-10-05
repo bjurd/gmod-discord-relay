@@ -44,7 +44,8 @@ end
 
 --- Broadcasts a message to all writeable channels
 --- @param Message Message
-function conn.BroadcastMessage(Message)
+--- @param FilterFlag string|nil The flag to filter channels for, defaults to "Write"
+function conn.BroadcastMessage(Message, FilterFlag)
 	local Socket = conn.Instance
 
 	if not Socket or not Socket:isConnected() then
@@ -54,7 +55,9 @@ function conn.BroadcastMessage(Message)
 		return
 	end
 
-	local WriteableChannels = conn.FilterChannels("Write")
+	FilterFlag = FilterFlag or "Write"
+
+	local WriteableChannels = conn.FilterChannels(FilterFlag)
 	local Channels = #WriteableChannels
 
 	if Channels < 1 then
@@ -73,7 +76,8 @@ end
 
 --- Broadcasts a message to all writeable channel webhooks
 --- @param Message Message
-function conn.BroadcastWebhookMessage(Message)
+--- @param FilterFlag string|nil The flag to filter channels for, defaults to "Write"
+function conn.BroadcastWebhookMessage(Message, FilterFlag)
 	local Socket = conn.Instance
 
 	if not Socket or not Socket:isConnected() then
@@ -81,7 +85,9 @@ function conn.BroadcastWebhookMessage(Message)
 		return
 	end
 
-	local WriteableChannels = conn.FilterChannels("Write")
+	FilterFlag = FilterFlag or "Write"
+
+	local WriteableChannels = conn.FilterChannels(FilterFlag)
 	local Channels = #WriteableChannels
 
 	if Channels < 1 then
@@ -104,7 +110,16 @@ function conn.BroadcastWebhookMessage(Message)
 				return -- Prevent the log
 			end
 
-			discord.logging.Log(LOG_ERROR, "Couldn't find any useable webhooks to broadcast to for channel %s", ChannelID)
+			discord.logging.Log(LOG_NORMAL, "Creating new webhook for channel %s", ChannelID)
+
+			discord.webhooks.CreateChannelWebhook(Socket, ChannelID, function(Webhook)
+				if not Webhook or not Webhook:IsUseable() then
+					discord.logging.Log(LOG_ERROR, "Failed to create a useable webhook for channel %s", ChannelID)
+					return
+				end
+
+				discord.webhooks.SendToChannel(Socket, Webhook, Message)
+			end)
 		end)
 	end
 end
