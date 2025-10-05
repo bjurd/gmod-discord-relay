@@ -6,6 +6,7 @@ include("config.lua")
 
 include("util.lua")
 include("connection.lua")
+include("steam.lua")
 
 include("events/ready.lua")
 include("events/discordmsg.lua")
