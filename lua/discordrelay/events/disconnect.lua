@@ -1,6 +1,7 @@
 gameevent.Listen("player_disconnect")
 hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 	local SteamID = Data.networkid
+	local SteamID64 = util.SteamIDTo64(SteamID)
 	local Username = Data.name
 	local Reason = Data.reason
 
@@ -22,5 +23,9 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 			:WithColorRGB(255, 0, 0)
 			:End()
 
-	relay.conn.BroadcastWebhookMessage(Message)
+	relay.steam.GetSteamAvatar(SteamID64, function(AvatarURL) -- See connect.lua for the reason
+		Message = Message:WithAvatar(AvatarURL)
+
+		relay.conn.BroadcastWebhookMessage(Message)
+	end)
 end)

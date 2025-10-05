@@ -11,18 +11,24 @@ hook.Add("player_changename", "DiscordRelay::OnNameChange", function(Data)
 	local Description = Format("%s has changed their name to %s", OldName, NewName)
 
 	local Message = discord.messages.Begin()
-		:WithUsername(NewName)
 		:WithEmbed()
+			:WithDescription(Description)
+			:WithColorRGB(255, 150, 0)
 
 	if IsValid(Player) then
 		Message = Message:WithAuthor()
 					:WithName(Player:SteamID())
 					:End()
+				:End()
+
+		-- TODO: This will cause the Message's name to be the Player's old name instead of their new one
+		-- because this event fires before the Player's name has actually changed :/
+		relay.conn.BroadcastPlayerMessage(Player, Message)
+
+		return
 	end
 
-	Message = Message:WithDescription(Description)
-				:WithColorRGB(255, 150, 0)
-				:End()
+	Message = Message:End()
 
 	relay.conn.BroadcastWebhookMessage(Message)
 end)

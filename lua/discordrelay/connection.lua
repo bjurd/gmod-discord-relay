@@ -123,3 +123,22 @@ function conn.BroadcastWebhookMessage(Message, FilterFlag)
 		end)
 	end
 end
+
+--- Broadcasts a message to all writeable channel webhooks as a Player
+--- @param Player Player If the player is invalid the name will be "Console"
+--- @param Message Message The Message to send, will have its Username and AvatarURL overridden with the Player's data
+function conn.BroadcastPlayerMessage(Player, Message)
+	if Player:IsValid() then
+		Message = Message:WithUsername(relay.util.LimitUsername(Player:Nick()))
+
+		relay.steam.GetPlayerAvatar(Player, function(AvatarURL)
+			Message = Message:WithAvatar(AvatarURL) -- It's okay if this fails, they'll just have no avatar
+
+			conn.BroadcastWebhookMessage(Message)
+		end)
+	else
+		Message = Message:WithUsername("Console")
+
+		conn.BroadcastWebhookMessage(Message)
+	end
+end
