@@ -62,9 +62,16 @@ end
 
 function WEBHOOK_POST_Success(Code, Body)
 	if Code ~= 200 then
-		logging.DevLog(LOG_ERROR, "Failed to POST webhook, code %d", Code)
-		logging.DevLog(LOG_ERROR, Body)
-		return
+		if string.len(Body) > 0 then
+			logging.DevLog(LOG_ERROR, "Failed to POST webhook, code %d", Code)
+			logging.DevLog(LOG_ERROR, Body)
+
+			return
+		else
+			-- Webhooks will return a code 204 (No Content) error code
+			-- but the message will still be sent and the error returned by Discord
+			-- is an empty string... /shrug
+		end
 	end
 
 	logging.DevLog(LOG_SUCCESS, "Successfully POSTed webhook")
@@ -81,11 +88,33 @@ function WEBHOOK_CREATE_Success(Code, Body, ChannelID, Callback)
 		return
 	end
 
-	logging.DevLog(LOG_SUCCESS, "Successfully created webhook")
+	local WebhookData = util.JSONToTable(Body, false, true)
+
+	if not Data then
+		logging.DevLog(LOG_ERROR, "Got invalid response for webhook creation")
+		logging.DevLog(LOG_ERROR, Body)
+		Callback(nil)
+
+		return
+	end
+
+	local Webhook = oop.ConstructNew("Webhook", WebhookData)
+
+	local Key = Format(CacheKey, ChannelID)
+	local Cached = cache.Get(Key) or cache.CreateTimed(Key, 1800)
+
+	table.Empty(Cached)
+	table.insert(Cached, Webhook) -- Our new friend is our only friend
+
+	logging.DevLog(LOG_SUCCESS, "Successfully created and cached webhook")
+
+	Callback(Webhook)
 end
 
-function WEBHOOK_CREATE_Fail(Reason)
+function WEBHOOK_CREATE_Fail(Reason, Callback)
 	logging.DevLog(LOG_ERROR, "Failed to create webhook, %s", Reason)
+
+	Callback(nil)
 end
 
 --- Fetches and creates the webhook cache table, used internally by GetChannelWebhooks
@@ -131,12 +160,48 @@ function GetChannelWebhooks(Socket, ChannelID, Callback)
 	FetchChannelWebhooks(Socket, ChannelID, Callback)
 end
 
+--- Creates a new Webhook for a channel and runs the callback
+--- @param Socket WEBSOCKET A GWSockets socket instance
+--- @param ChannelID string Channel snowflake
+--- @param Callback function Only argument is the created Webhook, nil on failure
+function CreateChannelWebhook(Socket, ChannelID, Callback)
+	local WebhookURL = Format(WebhookURL, Socket.API, ChannelID)
+
+	local CreationTable = { ["name"] = "Relay" } -- TODO: Make a config option for this? Doesn't really matter though
+	local CreationData = util.TableToJSON(CreationTable)
+
+	HTTP({
+		["url"] = WebhookURL,
+		["method"] = "POST",
+
+		["headers"] = {
+			["Content-Type"] = "application/json",
+			["Content-Length"] = tostring(string.len(CreationData)),
+			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
+			["Authorization"] = Format("Bot %s", Socket.Token)
+		},
+		["type"] = "application/json",
+
+		["body"] = CreationData,
+
+		["success"] = function(Code, Body)
+			WEBHOOK_CREATE_Success(Code, Body, ChannelID, Callback)
+		end,
+
+		["failed"] = function(Reason)
+			WEBHOOK_CREATE_Fail(Reason, Callback)
+		end
+	})
+end
+
 --- POSTs a message to a webhook
 --- @param Socket WEBSOCKET A GWSockets socket instance
 --- @param WebhookURL string URL to POST to
 --- @param Data table Message data
 function POSTMessage(Socket, WebhookURL, Data)
 	local MessageData = util.TableToJSON(Data)
+
+	logging.DevLog(LOG_NORMAL, "POSTing webhook data %s", MessageData)
 
 	HTTP({
 		["url"] = WebhookURL,
@@ -145,10 +210,10 @@ function POSTMessage(Socket, WebhookURL, Data)
 		["headers"] = {
 			["Content-Type"] = "application/json",
 			["Content-Length"] = tostring(string.len(MessageData)),
-			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
+			["Host"] = "discord.com",
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
-		["type"] = "application/json", -- There was some bunk ass change in HTTP that made this needed :/
+		["type"] = "application/json",
 
 		["body"] = MessageData,
 
@@ -171,5 +236,3 @@ function SendToChannel(Socket, Webhook, Message)
 
 	POSTMessage(Socket, WebhookURL, Message:__json())
 end
-
--- TODO: CreateChannelWebhook
