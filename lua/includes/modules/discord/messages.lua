@@ -9,9 +9,10 @@ module("messages", package.discord)
 
 MessageURL = "https://discord.com/api/v%d/channels/%s/messages"
 
-function MESSAGE_Success(Code)
+function MESSAGE_Success(Code, Body)
 	if Code ~= 200 then
 		logging.DevLog(LOG_ERROR, "Failed to POST message, code %d", Code)
+		logging.DevLog(LOG_ERROR, Body)
 		return
 	end
 

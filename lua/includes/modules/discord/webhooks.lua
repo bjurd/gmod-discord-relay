@@ -13,6 +13,7 @@ WebhookURL = "https://discord.com/api/v%d/channels/%s/webhooks"
 function WEBHOOK_GET_Success(Code, Body, ChannelID, Callback)
 	if Code ~= 200 then
 		logging.DevLog(LOG_ERROR, "Failed to fetch channel webhooks, code %d", Code)
+		logging.DevLog(LOG_ERROR, Body)
 		Callback(nil)
 
 		return
@@ -22,6 +23,7 @@ function WEBHOOK_GET_Success(Code, Body, ChannelID, Callback)
 
 	if not Data then
 		logging.DevLog(LOG_ERROR, "Got invalid response for channel webhooks")
+		logging.DevLog(LOG_ERROR, Body)
 		Callback(nil)
 
 		return
@@ -58,9 +60,10 @@ function WEBHOOK_GET_Fail(Reason, Callback)
 	Callback(nil)
 end
 
-function WEBHOOK_POST_Success(Code)
+function WEBHOOK_POST_Success(Code, Body)
 	if Code ~= 200 then
 		logging.DevLog(LOG_ERROR, "Failed to POST webhook, code %d", Code)
+		logging.DevLog(LOG_ERROR, Body)
 		return
 	end
 
@@ -74,6 +77,7 @@ end
 function WEBHOOK_CREATE_Success(Code, Body, ChannelID, Callback)
 	if Code ~= 200 then
 		logging.DevLog(LOG_ERROR, "Failed to create webhook, code %d", Code)
+		logging.DevLog(LOG_ERROR, Body)
 		return
 	end
 
