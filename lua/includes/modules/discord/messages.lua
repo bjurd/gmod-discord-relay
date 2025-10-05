@@ -51,10 +51,10 @@ end
 
 --- Sends a message to a channel
 --- @param Socket WEBSOCKET A GWSockets socket instance
---- @param Channel string Channel snowflake
+--- @param ChannelID string Channel snowflake
 --- @param Message Message
-function SendToChannel(Socket, Channel, Message)
-	local MessageURL = Format(MessageURL, Socket.API, Channel)
+function SendToChannel(Socket, ChannelID, Message)
+	local MessageURL = Format(MessageURL, Socket.API, ChannelID)
 
 	POSTMessage(Socket, MessageURL, Message:__json())
 end
