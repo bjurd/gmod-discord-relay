@@ -37,7 +37,7 @@ function POSTMessage(Socket, MessageURL, Data)
 		["headers"] = {
 			["Content-Type"] = "application/json",
 			["Content-Length"] = tostring(string.len(MessageData)),
-			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
+			["Host"] = "discord.com",
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
 		["type"] = "application/json", -- There was some bunk ass change in HTTP that made this needed :/
