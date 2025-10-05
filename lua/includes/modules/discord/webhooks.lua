@@ -90,7 +90,7 @@ function WEBHOOK_CREATE_Success(Code, Body, ChannelID, Callback)
 
 	local WebhookData = util.JSONToTable(Body, false, true)
 
-	if not Data then
+	if not WebhookData then
 		logging.DevLog(LOG_ERROR, "Got invalid response for webhook creation")
 		logging.DevLog(LOG_ERROR, Body)
 		Callback(nil)
