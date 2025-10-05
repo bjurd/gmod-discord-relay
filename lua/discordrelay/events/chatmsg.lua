@@ -1,7 +1,7 @@
 gameevent.Listen("player_say")
 hook.Add("player_say", "DiscordRelay::ReadChat", function(Data)
-	local Message = Data.text
-	if string.len(Message) < 1 then return end -- Should never happen unless someone's doing something dumb
+	local Content = Data.text
+	if string.len(Content) < 1 then return end -- Should never happen unless someone's doing something dumb
 
 	local UserID = Data.userid
 	local Username = "Console"
@@ -19,12 +19,13 @@ hook.Add("player_say", "DiscordRelay::ReadChat", function(Data)
 		end
 	end
 
+	Username = relay.util.LimitUsername(Username)
+	Content = relay.util.MarkdownEscape(Content)
+
 	-- TODO: Webhook
 	local Message = discord.messages.Begin()
-		:WithEmbed()
-			:WithTitle(Username)
-			:WithDescription(Message)
-			:End()
+		:WithUsername(Username)
+		:WithContent(Content)
 
-	relay.conn.BroadcastMessage(Message)
+	relay.conn.BroadcastWebhookMessage(Message)
 end)
