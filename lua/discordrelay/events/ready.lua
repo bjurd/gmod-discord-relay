@@ -1,4 +1,4 @@
-hook.Add("DiscordRelay::DispatchEvent", "SendOnlineMessage", function(Event, Socket)
+hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::SendOnlineMessage", function(Event, Socket)
 	if Event ~= "READY" then return end
 
 	local Message = discord.messages.Begin()
