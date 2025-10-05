@@ -72,6 +72,10 @@ end
 --- @return string
 function rutil.MarkdownEscape(String)
 	String = string.gsub(String, "([\\%*_%`~>|#])", "\\%1")
+
+	String = string.gsub(String, "([ \t]*)[-+*]%s", "%1\\- ") -- Lists
+	String = string.gsub(String, "([ \t]*)(%d+)%.%s", "%1%2\\. ") -- Numbered lists
+
 	return String -- LuaLS crying about multiple returns
 end
 
