@@ -2,6 +2,7 @@ hook.Add("DiscordRelay::DispatchEvent", "SendOnlineMessage", function(Event, Soc
 	if Event ~= "READY" then return end
 
 	local Message = discord.messages.Begin()
+		:WithUsername("Server Status")
 		:WithEmbed()
 			:WithTitle(GetHostName())
 			:WithDescription("Server is now online!")
