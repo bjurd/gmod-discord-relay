@@ -2,6 +2,7 @@
 --- @field Content string
 --- @field Embeds table
 --- @field Username string|nil
+--- @field AvatarURL string|nil
 local MESSAGE = {}
 MESSAGE.__index = MESSAGE
 
@@ -9,6 +10,7 @@ function MESSAGE:__new()
 	self.Content = ""
 	self.Embeds = {}
 	self.Username = nil
+	self.AvatarURL = nil
 
 	-- TODO: AllowedMentions
 end
@@ -17,7 +19,9 @@ function MESSAGE:__json()
 	local SelfParse = {
 		content = self.Content,
 		embeds = {},
-		username = self.Username
+		username = self.Username,
+		avatar_url = self.AvatarURL,
+		allowed_mentions = { parse = {} } -- Placeholder to disable these
 	}
 
 	local EmbedCount = #self.Embeds
@@ -43,6 +47,15 @@ end
 --- @return Message self
 function MESSAGE:WithUsername(Username)
 	self.Username = Username or nil
+	return self
+end
+
+--- Sets Message avatar URL
+--- Meant for use with Webhooks
+--- @param AvatarURL string|nil Message avatar URL. Set to nil to remove
+--- @return Message self
+function MESSAGE:WithAvatar(AvatarURL)
+	self.AvatarURL = AvatarURL or nil
 	return self
 end
 
