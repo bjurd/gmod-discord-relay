@@ -13,6 +13,7 @@ include("events/chatmsg.lua")
 include("events/connect.lua")
 include("events/disconnect.lua")
 include("events/changename.lua")
+include("events/error.lua")
 
 include("commands.lua")
 include("commands/help.lua")
