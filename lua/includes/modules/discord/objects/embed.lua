@@ -32,18 +32,18 @@ function EMBED:__json()
 end
 
 --- Sets Embed title
---- @param Title string Title content, limited to 64 characters
+--- @param Title string Title content, will fail to send if >256 characters
 --- @return Embed self
 function EMBED:WithTitle(Title)
-	self.Title = string.sub(tostring(Title), 1, 64)
+	self.Title = Title
 	return self
 end
 
 --- Sets Embed description
---- @param Description string Description content, limited to 2000 characters
+--- @param Description string Description content, will fail to send if >4096 characters
 --- @return Embed self
 function EMBED:WithDescription(Description)
-	self.Description = string.sub(tostring(Description), 1, 2000)
+	self.Description = Description
 	return self
 end
 

@@ -16,7 +16,7 @@ function EAUTHOR:__json()
 end
 
 --- Sets EmbedAuthor name
---- @param Name string
+--- @param Name string Name, will fail to send if >256 characters
 --- @return EmbedAuthor self
 function EAUTHOR:WithName(Name)
 	self.Name = Name

@@ -16,7 +16,7 @@ function EFOOTER:__json()
 end
 
 --- Sets EmbedFooter text
---- @param Text string
+--- @param Text string Text, will fail to send if >2048 characters
 --- @return EmbedFooter self
 function EFOOTER:WithText(Text)
 	self.Text = Text
