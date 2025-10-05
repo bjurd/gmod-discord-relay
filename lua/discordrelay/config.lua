@@ -25,16 +25,22 @@ config.Messages = {
 
 	["Guild ID"] = {
 		["Channel ID"] = {
-			-- Whether or not the bot will relay Discord messages to in-game chat. Default is false
+			-- Whether or not the bot will relay Discord messages to in-game chat
+			-- Default is false
 			Read = true/false,
 
-			-- Whether or not the bot will relay in-game messages to this channel. Default is false
+			-- Whether or not the bot will relay in-game messages to this channel
+			-- Default is false
 			Write = true/false,
 
-			-- Whether or not this channel should be used to relay server log messages to Discord. Default is false
+			-- Whether or not this channel should be used to relay server log messages to Discord
+			-- Default is false
+			-- If true this will ignore the "Write" parameter
 			AdminLog = true/false,
 
-			-- Whether or not this channel should be used to relay server Lua error messages to Discord. Default is false
+			-- Whether or not this channel should be used to relay server Lua error messages to Discord
+			-- Default is false
+			-- If true this will ignore the "Write" parameter
 			ErrorLog = true/false
 		}
 	}
