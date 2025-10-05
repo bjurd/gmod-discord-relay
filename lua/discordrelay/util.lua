@@ -66,3 +66,29 @@ function rutil.GetMemberName(User, Member)
 
 	return User:GetID()
 end
+
+--- Cleans a string of any markdown sequences it may possess
+--- @param String string
+--- @return string
+function rutil.MarkdownEscape(String)
+	String = string.gsub(String, "([\\%*_%`~>|#])", "\\%1")
+	return String -- LuaLS crying about multiple returns
+end
+
+--- Limits a username (or any string really) to 32 characters
+--- @param Username string
+--- @return string
+function rutil.LimitUsername(Username)
+	Username = string.Left(Username, 32)
+	return Username
+end
+
+--- Fixes up an in-game username for display in a Discord message
+--- @param Username string
+--- @return string
+function rutil.CleanUsername(Username)
+	Username = rutil.LimitUsername(Username)
+	Username = rutil.MarkdownEscape(Username)
+
+	return Username
+end
