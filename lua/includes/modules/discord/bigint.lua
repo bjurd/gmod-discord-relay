@@ -36,6 +36,55 @@ function Split(BigInt)
 	return hi, lo
 end
 
+--- Combines hi and lo back into a bigint
+--- @param hi number
+--- @param lo number
+--- @return string
+function Combine(hi, lo)
+	if hi == 0 then return tostring(lo) end
+	if lo == 0 then return tostring(hi * MaxValue) end
+
+	local Parts = {}
+
+	while hi > 0 do
+		local rem = (hi % 1e9) * MaxValue + lo
+		local rem_lo = rem % 1e9
+
+		lo = rem_lo
+		hi = math.floor(hi / 1e9)
+
+		table.insert(Parts, string.format("%09d", rem_lo))
+	end
+
+	if hi > 0 then
+		table.insert(Parts, tostring(hi))
+	end
+
+	local is = math.floor(#Parts * 0.5)
+	for i = 1, is do
+		local j = #Parts - i + 1
+		Parts[i], Parts[j] = Parts[j], Parts[i]
+	end
+
+	local BigInt = table.concat(Parts)
+	return (string.gsub(BigInt, "^0+", "")) ~= "" and (string.gsub(BigInt, "^0+", "")) or "0" -- Remove leading 0's
+end
+
+--- Splits a bigint bitflag into hi and lo
+--- @param Flag string|number
+--- @return number, number
+function SplitFlag(Flag)
+	if isnumber(Flag) then
+		local flo = Flag % MaxValue
+		local fhi = (Flag - flo) / MaxValue
+
+		return fhi, flo
+	else
+		Flag = tostring(Flag) -- LuaLS crying again
+		return Split(Flag)
+	end
+end
+
 --- Tests if a bit is set
 --- @param BigInt string
 --- @param Bit number
@@ -52,17 +101,27 @@ end
 
 --- Tests if a bitflag is set
 --- @param BigInt string
---- @param Flag number
+--- @param Flag number|string
 --- @return boolean
 function IsBitflagSet(BigInt, Flag)
 	local hi, lo = Split(BigInt)
 
-	if Flag < MaxValue then
+	if isnumber(Flag) and Flag < MaxValue then
 		return bit.band(lo, Flag) ~= 0
 	else
-		local flo = Flag % MaxValue
-		local fhi = (Flag - flo) / MaxValue
+		local fhi, flo = SplitFlag(Flag)
 
-		return (bit.band(hi, fhi) ~= 0) or (bit.band(lo, flo) ~= 0)
+		return (bit.band(hi, fhi) == fhi) and (bit.band(lo, flo) == flo)
 	end
+end
+
+--- Adds a bitflag
+--- @param BigInt string
+--- @param Flag number|string
+--- @return number, number
+function AddBitflag(BigInt, Flag)
+    local hi, lo = Split(BigInt)
+    local fhi, flo = SplitFlag(Flag)
+
+    return bit.bor(hi, fhi), bit.bor(lo, flo)
 end
