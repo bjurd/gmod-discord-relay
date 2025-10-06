@@ -90,6 +90,8 @@ function GetGuildRoles(Socket, GuildID, Callback)
 	local Cached = cache.Get(Key)
 
 	if Cached then
+		logging.DevLog(LOG_SUCCESS, "Using cached roles for guild %s", GuildID)
+
 		Callback(Cached)
 		return
 	end

@@ -94,6 +94,8 @@ function rsteam.GetSteamAvatar(SteamID64, Callback)
 	local AvatarCache = discord.cache.Get(rsteam.CacheKey)
 
 	if AvatarCache and AvatarCache[SteamID64] then
+		discord.logging.DevLog(LOG_SUCCESS, "Using cached avatar for id %s", SteamID64)
+
 		Callback(AvatarCache[SteamID64])
 		return
 	end

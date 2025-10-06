@@ -153,6 +153,8 @@ function GetChannelWebhooks(Socket, ChannelID, Callback)
 	local Cached = cache.Get(Key)
 
 	if Cached then
+		logging.DevLog(LOG_SUCCESS, "Using cached webhooks for channel %s", ChannelID)
+
 		Callback(Cached)
 		return
 	end
