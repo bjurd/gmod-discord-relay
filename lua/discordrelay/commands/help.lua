@@ -1,8 +1,6 @@
 relay.commands.Register("help", PERMISSION_NONE, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
-	local _, WriteableChannels = relay.conn.FilterChannels("Write")
-
-	if not WriteableChannels[ChannelID] then return end
+	if not relay.conn.IsChannel(ChannelID, "Write") then return end
 
 	local CommandPrefix = relay.config.CommandPrefix
 	local CommandList = {}
@@ -15,10 +13,12 @@ relay.commands.Register("help", PERMISSION_NONE, function(Socket, Data, Args)
 
 	local Message = discord.messages.Begin()
 		:WithEmbed()
-			:WithTitle("Command List")
+			:WithAuthor()
+				:WithName("Command List")
+				:End()
 			:WithDescription(Compiled)
 			:WithColorRGB(255, 150, 0)
 			:End()
 
-	discord.messages.SendToChannel(Socket, ChannelID, Message)
+	relay.conn.SendWebhookMessage(ChannelID, Message)
 end)

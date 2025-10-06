@@ -24,7 +24,7 @@ end
 --- Gets the list of channels within the config that have a certain flag set
 --- @param Flag string The flag to search for (eg Read, Write)
 --- @return table ChannelList, table KeyedChannelList
-function conn.FilterChannels(Flag)
+function conn.FilterChannels(Flag) -- TODO: Cache the results of this
 	local MessageList = config.Messages
 
 	local ChannelList = {}
@@ -40,6 +40,15 @@ function conn.FilterChannels(Flag)
 	end
 
 	return ChannelList, KeyedChannelList
+end
+
+--- Returns if a ChannelID is in the config with a certain flag set
+--- @param ChannelID string The channel snowflake
+--- @param Flag string The flag to search for (eg Read, Write)
+function conn.IsChannel(ChannelID, Flag)
+	local _, KeyedChannelList = conn.FilterChannels(Flag)
+
+	return KeyedChannelList[ChannelID]
 end
 
 --- Broadcasts a message to all writeable channels
@@ -74,6 +83,46 @@ function conn.BroadcastMessage(Message, FilterFlag)
 	end
 end
 
+--- Sends a Message through a Webhook, used internally by BroadcastWebhookMessage
+--- Serves as a wrapper for creating a Webhook if a useable one doesn't already exist before sending a message
+--- NOTE: This function does NOT check channel configuration status (eg Read, Write)
+--- @param ChannelID string Channel snowflake
+--- @param Message Message
+function conn.SendWebhookMessage(ChannelID, Message)
+	local Socket = conn.Instance
+
+	if not Socket or not Socket:isConnected() then
+		discord.logging.DevLog(LOG_ERROR, "Can't send messages with an unconnected socket!")
+		return
+	end
+
+	discord.webhooks.GetChannelWebhooks(Socket, ChannelID, function(Webhooks)
+		local WebhookCount = #Webhooks
+
+		for i = 1, WebhookCount do
+			local Webhook = Webhooks[i]
+			if not Webhook:IsUseable() then continue end
+
+			discord.webhooks.SendToChannel(Socket, Webhook, Message)
+
+			-- Found a useable one!
+			return
+		end
+
+		discord.logging.Log(LOG_NORMAL, "Creating new webhook for channel %s", ChannelID)
+
+		-- Ah hell
+		discord.webhooks.CreateChannelWebhook(Socket, ChannelID, function(Webhook)
+			if not Webhook or not Webhook:IsUseable() then
+				discord.logging.Log(LOG_ERROR, "Failed to create a useable webhook for channel %s", ChannelID)
+				return
+			end
+
+			discord.webhooks.SendToChannel(Socket, Webhook, Message)
+		end)
+	end)
+end
+
 --- Broadcasts a message to all writeable channel webhooks
 --- @param Message Message
 --- @param FilterFlag string|nil The flag to filter channels for, defaults to "Write"
@@ -98,29 +147,7 @@ function conn.BroadcastWebhookMessage(Message, FilterFlag)
 	for i = 1, Channels do
 		local ChannelID = WriteableChannels[i]
 
-		discord.webhooks.GetChannelWebhooks(Socket, ChannelID, function(Webhooks)
-			local WebhookCount = #Webhooks
-
-			for i = 1, WebhookCount do
-				local Webhook = Webhooks[i]
-				if not Webhook:IsUseable() then continue end
-
-				discord.webhooks.SendToChannel(Socket, Webhook, Message)
-
-				return -- Prevent the log
-			end
-
-			discord.logging.Log(LOG_NORMAL, "Creating new webhook for channel %s", ChannelID)
-
-			discord.webhooks.CreateChannelWebhook(Socket, ChannelID, function(Webhook)
-				if not Webhook or not Webhook:IsUseable() then
-					discord.logging.Log(LOG_ERROR, "Failed to create a useable webhook for channel %s", ChannelID)
-					return
-				end
-
-				discord.webhooks.SendToChannel(Socket, Webhook, Message)
-			end)
-		end)
+		conn.SendWebhookMessage(ChannelID, Message)
 	end
 end
 
