@@ -39,14 +39,27 @@ function relay.ResetLog()
 	end
 end
 
-hook.Add("InitPostEntity", "DiscordRelay::InitialBroadcast", function()
+hook.Add("GetGameDescription", "DiscordRelay::InitialBroadcast", function()
+	-- https://github.com/Facepunch/garrysmod-issues/issues/3001
+	-- Wait until the server is actually joinable to begin
+	local IP = game.GetIPAddress()
+	if string.StartsWith(IP, "0.0.0.0") then return end
+
+	hook.Remove("GetGameDescription", "DiscordRelay::InitialBroadcast")
+
+
+
 	relay.ResetLog()
+
+
 
 	local sv_hibernate_think = GetConVar("sv_hibernate_think")
 	if sv_hibernate_think and not sv_hibernate_think:GetBool() then
 		-- Piss
 		discord.logging.Log(LOG_WARNING, "sv_hibernate_think is disabled, relay processing will halt whilst the server is empty!")
 	end
+
+
 
 	relay.conn.Initialize()
 end)
