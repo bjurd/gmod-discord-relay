@@ -77,3 +77,9 @@ config.Messages = {
 --- Prefix to be used for Discord commands. Set to an empty string ("") to disable commands
 --- Note that this is NOT case sensitive, it will be convered to lowercase during comparison
 config.CommandPrefix = ";"
+
+
+
+--- The file name/path of the log file. Only certain extensions are supported, see https://wiki.facepunch.com/gmod/file.Write
+--- Set to an empty string ("") to disable the log file
+config.LogFile = "discord_relay.txt"
