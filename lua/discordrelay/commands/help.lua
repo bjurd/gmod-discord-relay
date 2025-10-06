@@ -1,4 +1,4 @@
-relay.commands.Register("help", function(Socket, Data, Args)
+relay.commands.Register("help", PERMISSION_NONE, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
 	local _, WriteableChannels = relay.conn.FilterChannels("Write")
 

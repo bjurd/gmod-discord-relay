@@ -3,6 +3,8 @@ local config = relay.config
 
 --- Discord API version to use
 --- https://discord.com/developers/docs/reference#api-versioning
+---
+--- See API_ enumerations
 config.API = discord.versioning.GetLatestAPI()
 
 
@@ -79,6 +81,29 @@ config.Messages = {
 config.CommandPrefix = ";"
 
 
+
+--- Permission levels for Discord commands and Roles
+--- See PERMISSION_ enumerations
+config.CommandPermissions = { -- TODO: Extend this out to all Role spots instead of just commands (Maybe)
+	--[[
+	Permission levels default to their Discord values, values in this table are added on to the Discord permissions
+	so you can extend a Role's privilege in the server without extending it in Discord
+
+	If you want a Role to have access to all commands, you can give it the ADMINISTRATOR permission
+
+	Each command has its own permission checks that's performed when the command is attempted to be ran,
+	with permission levels being defined when the command is registered
+
+	Format:
+
+	["Role ID"] = (PERMISSION_XYZ)
+
+	Example:
+
+	["1142554498842251366"] = PERMISSION_ADMINISTRATOR,
+	["1142386810761265162"] = bit.bor(PERMISSION_MANAGE_CHANNELS, PERMISSION_USE_APPLICATION_COMMANDS) -- Gives both PERMISSION_MANAGE_CHANNELS and PERMISSION_USE_APPLICATION_COMMANDS
+	--]]
+}
 
 --- The file name/path of the log file. Only certain extensions are supported, see https://wiki.facepunch.com/gmod/file.Write
 --- Set to an empty string ("") to disable the log file

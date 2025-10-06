@@ -10,6 +10,7 @@ include("steam.lua")
 
 include("events/ready.lua")
 include("events/discordmsg.lua")
+include("events/discordcmd.lua")
 include("events/chatmsg.lua")
 include("events/connect.lua")
 include("events/disconnect.lua")
