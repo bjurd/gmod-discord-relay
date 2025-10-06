@@ -1,3 +1,6 @@
+--- Dummy value used to represent a lack of permission information
+_G.PERMISSION_NONE = 0
+
 enums.CreateShifted("PERMISSION", {
 	"CREATE_INSTANT_INVITE",
 	"KICK_MEMBERS",
