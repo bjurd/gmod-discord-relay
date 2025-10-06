@@ -56,16 +56,18 @@ end
 --- @param Type number The type of message, use LOG_ enums
 --- @param Message string The message
 function WriteLogLn(Type, Message)
-	if not istable(relay) or not istable(relay.config) then return end
-	if not isstring(relay.config.LogFile) or string.len(relay.config.LogFile) < 1 then return end
+	if not istable(relay) or not isfunction(relay.GetLogPath) then return end
 
 	if IsDevLogEqv(Type) and Type == LOG_DEV then
 		-- Don't flood the log with miscellaneous DEV messages
 		-- only show DEV warning, error and success messages
-		return
+		-- return
+		-- On second thought, who cares :^)
 	end
 
-	local LogPath = relay.config.LogFile
+	local LogPath = relay.GetLogPath()
+	if not LogPath then return end
+
 	local Timestamp = os.date("%c", os.time())
 
 	local LogLine = Format("%s - %s\n", Timestamp, Message)
