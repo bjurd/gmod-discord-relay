@@ -69,7 +69,36 @@ hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::READY", function(Event, Socket
 	Socket.SessionID = Data.session_id
 	-- TODO: Resume
 
+	if isnumber(Socket.HeartbeatInterval) then
+		local HearbeatIdentifier = Format("DiscordRelay::Heartbeat::%s", Socket.SessionID)
+		Socket.HearbeatIdentifier = HearbeatIdentifier
+
+		timer.Create(HearbeatIdentifier, Socket.HeartbeatInterval, 0, function()
+			-- You're supposed to close and reconnect if you don't get a HEARTBEAT_ACK from this
+			-- but that's retarded sooooooooooooooooo
+			socket.WriteHeartbeat(Socket)
+		end)
+
+		logging.DevLog(LOG_SUCCESS, "Setup heartbeat for session %s", Socket.SessionID)
+	else
+		logging.DevLog(LOG_ERROR, "Failed to setup heartbeat for session %s", Socket.SessionID)
+	end
+
 	logging.DevLog(LOG_SUCCESS, "Socket is ready! Session ID: %s", Socket.SessionID)
+end)
+
+hook.Add("DiscordRelay::FireOperation", "DEFAULT::HEARTBEAT", function(Operation, Socket, Data)
+	if Operation ~= OPERATION_HEARTBEAT then return end -- Discord sends these occasionally
+
+	logging.DevLog(LOG_NORMAL, "Received heartbeat request for session %s", Socket.SessionID)
+
+	socket.WriteHeartbeat(Socket)
+end)
+
+hook.Add("DiscordRelay::FireOperation", "DEFAULT::HEARTBEAT_ACK", function(Operation, Socket, Data)
+	if Operation ~= OPERATION_HEARTBEAT_ACK then return end
+
+	logging.DevLog(LOG_SUCCESS, "Acknowledged heartbeat for session %s", Socket.SessionID)
 end)
 
 hook.Add("DiscordRelay::FireOperation", "DEFAULT::DISPATCH", function(Operation, Socket, Data)
@@ -84,6 +113,10 @@ hook.Add("DiscordRelay::FireOperation", "DEFAULT::INVALID_SESSION", function(Ope
 	if Operation ~= OPERATION_INVALID_SESSION then return end
 
 	logging.Log(LOG_ERROR, "Socket has an invalid session!")
+
+	if isstring(Socket.HearbeatIdentifier) then
+		timer.Remove(Socket.HearbeatIdentifier)
+	end
 
 	if Data.d == true then
 		-- TODO: Resume if possible
@@ -109,5 +142,8 @@ hook.Add("DiscordRelay::FireOperation", "DEFAULT::HELLO", function(Operation, So
 
 	socket.WriteData(Socket, DataPacket)
 
-	-- TODO: Heartbeat
+	-- Wait until we have a session id to start this
+	-- so we can use the session id as the timer identifier
+	local HeartbeatInterval = Data.d.heartbeat_interval / 1000
+	Socket.HeartbeatInterval = HeartbeatInterval
 end)

@@ -137,3 +137,15 @@ end
 function WriteJSON(Socket, JSON)
 	Socket:write(JSON)
 end
+
+--- Writes a Heartbeat operation to the socket
+--- @param Socket WEBSOCKET
+function WriteHeartbeat(Socket)
+	local Data = {}
+	Data.op = OPERATION_HEARTBEAT
+	Data.d = isnumber(Socket.SequenceNumber) and Socket.SequenceNumber or 0
+
+	logging.DevLog(LOG_NORMAL, "Writing heartbeat for session %s seq %d", Socket.SessionID, Data.d)
+
+	WriteData(Socket, Data)
+end
