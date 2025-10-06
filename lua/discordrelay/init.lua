@@ -19,6 +19,7 @@ include("events/error.lua")
 
 include("commands.lua")
 include("commands/help.lua")
+include("commands/status.lua")
 
 --- Gets the path of the relay's log file
 --- @return string|nil Path nil if logging is disabled
