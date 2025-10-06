@@ -24,13 +24,12 @@ end)
 hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::ReadDiscord", function(Event, Socket, Data)
 	if Event ~= "MESSAGE_CREATE" then return end
 
-	local _, ReadableChannels = relay.conn.FilterChannels("Read")
-	if not ReadableChannels[Data.channel_id] then return end
-
+	if not relay.conn.IsChannel(Data.channel_id, "Read") then return end
 	if not relay.util.IsNonEmptyStr(Data.content) then return end
 
-	local User = discord.oop.ConstructNew("User", Data.author)
-	if User:IsBot() then return end
+	-- Don't Bot check here so Bot messages still relay, commands will be handled by discordcmd.lua
+	-- local User = discord.oop.ConstructNew("User", Data.author)
+	-- if User:IsBot() then return end
 
 	hook.Run("DiscordRelay::ProcessDiscordMessage", Socket, Data)
 end)

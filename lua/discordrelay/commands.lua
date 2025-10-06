@@ -30,6 +30,12 @@ function commands.Process(Name, Socket, Data, Args)
 	end
 
 	local User = discord.oop.ConstructNew("User", Data.author)
+
+	if User:IsBot() then
+		discord.logging.DevLog(LOG_ERROR, "Bot user tried to run command %s", Name)
+		return
+	end
+
 	local Member = discord.oop.ConstructNew("Member", Data.member)
 
 	discord.roles.GetGuildRoles(Socket, Data.guild_id, function(Roles)
