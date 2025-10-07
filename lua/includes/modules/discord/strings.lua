@@ -13,3 +13,15 @@ function Pluralize(String, Amount, Suffix)
 		return String .. Suffix
 	end
 end
+
+--- Formats a string only if there are format arguments provided
+--- @param String string
+--- @param ... any
+--- @return string
+function SafeFormat(String, ...)
+	if select("#", ...) > 0 then
+		String = Format(String, ...)
+	end
+
+	return String
+end

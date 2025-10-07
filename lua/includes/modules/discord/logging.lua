@@ -83,7 +83,7 @@ end
 --- @param Message string The message, supports string formatting
 --- @param ... any Format arguments
 function WriteLog(Type, Message, ...)
-	WriteLogLn(Type, Format(Message, ...))
+	WriteLogLn(Type, strings.SafeFormat(Message, ...))
 end
 
 --- Sends a message to the console of the given type and writes it to the log file
@@ -92,7 +92,7 @@ end
 --- @param ... any Format arguments
 function Log(Type, Message, ...)
 	local MessageColor = GetLogColor(Type)
-	Message = Format(Message, ...)
+	Message = strings.SafeFormat(Message, ...)
 
 	MsgC(Color(88, 101, 242, 255), "[discordRelay] ", MessageColor, Message)
 	MsgN()
