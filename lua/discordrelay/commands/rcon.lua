@@ -5,6 +5,23 @@ relay.commands.Register("rcon", PERMISSION_ADMINISTRATOR, function(Socket, Data,
 
 	local Command = Args[1]
 
+	if not relay.util.IsNonEmptyStr(Command) then
+		if Writeable then
+			local Description = "```\nInvalid parameters\n```"
+
+			local Message = discord.messages.Begin()
+				:WithUsername("RCON")
+				:WithEmbed()
+					:WithDescription(Description)
+					:WithColorRGB(255, 0, 0)
+					:End()
+
+			relay.conn.SendWebhookMessage(ChannelID, Message)
+		end
+
+		return
+	end
+
 	if IsConCommandBlocked(Command) then
 		if Writeable then
 			local Description = Format("```\n%s\n```", Command)
