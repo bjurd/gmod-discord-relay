@@ -1,3 +1,5 @@
+local MaxFieldValue = 1024 - 8 -- See EmbedField.lua, -8 for the ```\n\n```
+
 relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
 	local Writeable = relay.conn.IsChannel(ChannelID, "Write") -- See rcon.lua
@@ -5,7 +7,7 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 	local Lua = table.concat(Args, " ")
 	local LuaFn = CompileString(Lua, "DiscordRelay", false)
 
-	local LuaDesc = Format("```\n%s\n```", Lua)
+	local LuaDesc = Format("```\n%s\n```", string.Left(Lua, MaxFieldValue))
 	local ResultDesc = "```\n%s\n```"
 
 	local Message = discord.messages.Begin()
@@ -23,7 +25,7 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 
 	if isstring(LuaFn) then
 		if Writeable then
-			ResultDesc = Format(ResultDesc, LuaFn)
+			ResultDesc = Format(ResultDesc, string.Left(LuaFn, MaxFieldValue)) -- LuaLS sucks :/
 
 			Embed = Embed:WithColorRGB(255, 0, 0)
 			EmbedAuthor = EmbedAuthor:WithName("Compilation Error")
@@ -44,7 +46,7 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 
 	if Status ~= true then
 		local ErrorMessage = (#Results > 0) and table.remove(Results, 1) or "Unknown Error"
-		ResultDesc = Format(ResultDesc, ErrorMessage)
+		ResultDesc = Format(ResultDesc, string.Left(ErrorMessage, MaxFieldValue))
 
 		Embed = Embed:WithColorRGB(255, 0, 0)
 		EmbedAuthor = EmbedAuthor:WithName("Runtime Error")
@@ -59,7 +61,7 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 			end
 
 			local RuntimeResults = table.concat(Results, ", ")
-			ResultDesc = Format(ResultDesc, RuntimeResults)
+			ResultDesc = Format(ResultDesc, string.Left(RuntimeResults, MaxFieldValue))
 		else
 			ResultDesc = Format(ResultDesc, "No values returned")
 		end
