@@ -5,6 +5,7 @@
 --- @field Color number
 --- @field Footer EmbedFooter
 --- @field Author EmbedAuthor
+--- @field Fields table
 local EMBED = {}
 EMBED.__index = EMBED
 
@@ -15,6 +16,7 @@ function EMBED:__new()
 	self.Color = 0
 	self.Footer = oop.CreateNew("EmbedFooter")
 	self.Author = oop.CreateNew("EmbedAuthor")
+	self.Fields = {}
 end
 
 function EMBED:__json()
@@ -22,11 +24,16 @@ function EMBED:__json()
 		title = self.Title,
 		description = self.Description,
 		url = self.URL,
-		color = self.Color
+		color = self.Color,
+		fields = {}
 	}
 
 	SelfParse.footer = self.Footer:__json()
 	SelfParse.author = self.Author:__json()
+
+	for i = 1, #self.Fields do
+		table.insert(SelfParse.fields, self.Fields[i]:__json())
+	end
 
 	return SelfParse
 end
@@ -79,6 +86,17 @@ function EMBED:WithAuthor()
 	self.Author.Embed = self
 
 	return self.Author
+end
+
+--- Begins EmbedField
+--- @return EmbedField Field
+function EMBED:WithField()
+	local Field = oop.CreateNew("EmbedField")
+	Field.Embed = self
+
+	table.insert(self.Fields, Field)
+
+	return Field
 end
 
 --- Ends an embed builder, adds it to its parent, and returns to the Message stack
