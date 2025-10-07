@@ -56,8 +56,19 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 
 		if #Results > 0 then
 			for i = 1, #Results do
-				-- LuaLS retardation moment
-				Results[i] = tostring(Results[i])
+				--- @type any
+				local Result = Results[i]
+
+				if istable(Result) then
+					Result = table.ToString(Result, nil, true) -- nil is valid here, LuaLs is braindead
+				elseif isstring(Result) then
+					Result = Format("\"%s\"", Result)
+				else
+					Result = tostring(Result)
+				end
+
+				--- @type any
+				Results[i] = Result
 			end
 
 			local RuntimeResults = table.concat(Results, ", ")
