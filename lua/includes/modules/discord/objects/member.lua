@@ -34,7 +34,7 @@ end
 --- @param Roles table The Role table from roles.GetGuildRoles
 --- @return Role
 function MEMBER:GetHighestRole(Roles)
-	local Highest -- This is garunteed to become a Role because of the @everyone role
+	local Highest
 	local MemberRoles = self:GetRoles()
 
 	for i = 1, #Roles do
@@ -50,7 +50,12 @@ function MEMBER:GetHighestRole(Roles)
 	end
 
 	if not Highest then
-		logging.Log(LOG_ERROR, "Somehow had a Member with no roles? This should never happen!")
+		-- TODO:
+		-- The @everyone role isn't present in the Member role list for some reason,
+		-- so this will just assume the @everyone role is the first role in the list.
+		-- It should always be first, but some checks should be added to make sure
+		Highest = Roles[1]
+		Highest.Color = 16777215 -- TODO: @everyone has a color of 0, but it should be white
 	end
 
 	return Highest
