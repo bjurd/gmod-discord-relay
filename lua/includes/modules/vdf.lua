@@ -2,6 +2,7 @@
 
 
 	yoinked from this: https://github.com/qwreey/vdf-lua
+	with some fixes because it's a bit bunk
 
 
 --]]
@@ -18,10 +19,10 @@ local sub = string.sub
 
 do
 	local escapeMap = {
-		n = "\n";
-		t = "\t";
-		["\\"] = "\\";
-		["\""] = "\"";
+		n = "\n",
+		t = "\t",
+		["\\"] = "\\",
+		["\""] = "\""
 	}
 	local stringUnicode = "^([%z\1-\127\194-\244][\128-\191]+)" -- op0
 	local stringEscape = "^\\(.)"                             -- op1
@@ -90,16 +91,33 @@ end
 
 do
 	local booleanMap = {
-		["true"]=true;
-		["false"]=false;
+		["true"] = true,
+		["false"] = false
 	}
-	local lineCommentRegex = "^[ \t]*//[^\n]*" -- 0
-	local stackStart = "^[ \t\n]*{[ \t\n]*"    -- 1
-	local stackEnd = "^[ \t\n]*}[ \t\n]*"    -- 1
-	local stringStart = "^[ \t\n]*\""          -- 3
-	local stringStartWithoutQuotes = "^[ \t\n]*" --4
 
-	function module.parse(str,config)
+	local lineCommentRegex = "[ \t]*//[^\n]*"
+	local stackStart = "^[ \t\n]*{"
+	local stackEnd   = "^[ \t\n]*}"
+	local stringStart = "^[ \t\n]*\""
+	local stringStartWithoutQuotes = "^[ \t\n]*([^ \t\n{}]+)"
+
+	local function skipComments(str, pos)
+		while true do
+			local wsStart, wsEnd = string.find(str, "^[ \t\n\r]+", pos)
+			if wsStart then pos = wsEnd + 1 end
+
+			local cStart, cEnd = string.find(str, lineCommentRegex, pos)
+			if cStart == pos then
+				local nl = string.find(str, "\n", cEnd + 1) or (#str + 1)
+				pos = nl
+			else
+				break
+			end
+		end
+		return pos
+	end
+
+	function module.parse(str, config)
 		str = str:gsub("\r\n", "\n")
 
 		local keyName
@@ -114,101 +132,54 @@ do
 		local includes = {}
 
 		while true do
-			local startAt,endAt
-			startAt,endAt = find(str,lineCommentRegex,pos)
-			local op = -1
-			if not startAt then
-				startAt,endAt = find(str,stackStart,pos)
-			elseif op == -1 then
-				op = 0
+			pos = skipComments(str, pos)
+			if pos > length then
+				global["#include"] = nil
+				global["#base"] = nil
+				return global
 			end
-			if not startAt then
-				startAt,endAt = find(str,stackEnd,pos)
-			elseif op == -1 then
-				op = 1
-			end
-			if not startAt then
-				startAt,endAt = find(str,stringStart,pos)
-			elseif op == -1 then
-				op = 2
-			end
-			if startAt and op == -1 then op = 3 end
 
-			if not startAt then
-				startAt,endAt = find(str,stringStartWithoutQuotes,pos)
-			elseif op == -1 then
-				op = 2
-			end
-			if startAt and op == -1 then op = 4 end
+			local startAt, endAt
 
-			if op == 0 then -- lineCommentRegex
-				pos = endAt + 1
-			elseif op == 1 then -- stackStart
-				if not keyToggle then
-					error("Unnamed stack is not supported")
-				end
+			-- stack open {
+			startAt, endAt = string.find(str, stackStart, pos)
+			if startAt == pos then
+				if not keyToggle then error("Unnamed stack is not supported") end
 				keyToggle = false
 				local lastCurrent = current
 				current = {}
 				currentKey = keyName
 				lastCurrent[keyName] = current
-				--print("is there included header?",includes[keyName]~=nil)
 				local header = includes[keyName]
 				if header then
-					for k,v in pairs(header) do
-						current[k] = v
-					end
+					for k,v in pairs(header) do current[k] = v end
 				end
-				insert(blockStack,current)
+				table.insert(blockStack, current)
 				pos = endAt + 1
-			elseif op == 2 then -- stackEnd
-				remove(blockStack)
+				goto next
+			end
+
+			-- stack close }
+			startAt, endAt = string.find(str, stackEnd, pos)
+			if startAt == pos then
+				table.remove(blockStack)
 				current = blockStack[#blockStack] or global
 				pos = endAt + 1
-			elseif op == 3 or op == 4 then -- stringStart
-				local parsedStr,parseEndAt = module.parseString(str,endAt,op == 3 and true or false)
+				goto next
+			end
+
+			-- quoted string
+			startAt, endAt = string.find(str, stringStart, pos)
+			if startAt == pos then
+				local parsedStr, parseEndAt = module.parseString(str, endAt, true)
 				pos = parseEndAt + 1
 				if keyToggle then
-					if keyName == "#include" or keyName == "#base" then
-						if config.path then
-							local pathSeparator = package.config:sub(1, 1)
-							local file = io.open(config.path == "" and parsedStr or config.path..pathSeparator..parsedStr)
-							if file then
-								local vdfHeader = file:read("*a")
-								file:close()
-								for k,v in pairs(module.parse(vdfHeader)) do
-									includes[k] = v
-								end
-							end
-						end
-						if config.pathInstance then
-							local moduleScript = config.pathInstance:FindFirstChild(parsedStr)
-							if moduleScript then
-								local vdfHeader = require(moduleScript)
-								for k,v in pairs(module.parse(vdfHeader)) do
-									includes[k] = v
-								end
-							end
-						end
-					end
-					if config and config.strict then
-						local header = includes[currentKey]
-						if header then
-							if not header[keyName] then
-								error(format("invalid key '%s'",keyName))
-							end
-						end
-					end
 					local value = parsedStr
 					if config and config.autoType then
-						local number = tonumber(parsedStr)
-						if number then
-							value = number
-						end
-						local boolean = booleanMap[value]
-						if boolean then
-							value = boolean
-						end
+						local num = tonumber(parsedStr)
+						if num then value = num end
+						local bool = booleanMap[value]
+						if bool ~= nil then value = bool end
 					end
 					current[keyName] = value
 					keyToggle = false
@@ -216,19 +187,34 @@ do
 					keyName = parsedStr
 					keyToggle = true
 				end
-			elseif op == -1 then
-				error(("Unexpected token got at position %d"):format(pos))
+				goto next
 			end
 
-			-- end parsing
-			if length <= pos then
-				global["#include"] = nil
-				global["#base"] = nil
-				return global
+			-- unquoted string
+			startAt, endAt, parsedStr = string.find(str, stringStartWithoutQuotes, pos)
+			if startAt == pos and parsedStr and #parsedStr > 0 then
+				pos = endAt + 1
+				if keyToggle then
+					local value = parsedStr
+					if config and config.autoType then
+						local num = tonumber(parsedStr)
+						if num then value = num end
+						local bool = booleanMap[value]
+						if bool ~= nil then value = bool end
+					end
+					current[keyName] = value
+					keyToggle = false
+				else
+					keyName = parsedStr
+					keyToggle = true
+				end
+				goto next
 			end
-			if lastPos == pos then
-				error("Infinite loop detected")
-			end
+
+			error(("Unexpected token got at position %d"):format(pos))
+
+			::next::
+			if lastPos == pos then error("Infinite loop detected") end
 			lastPos = pos
 		end
 	end
