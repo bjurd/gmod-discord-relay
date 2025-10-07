@@ -5,19 +5,31 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 	local Lua = table.concat(Args, " ")
 	local LuaFn = CompileString(Lua, "DiscordRelay", false)
 
+	local LuaDesc = Format("```\n%s\n```", Lua)
+	local ResultDesc = "```\n%s\n```"
+
+	local Message = discord.messages.Begin()
+		:WithUsername("LUA")
+
+	local Embed = Message:WithEmbed()
+	local EmbedAuthor = Embed:WithAuthor()
+
+	local LuaField = Embed:WithField()
+						:WithName("Lua")
+						:WithValue(LuaDesc)
+
+	local ResultField = Embed:WithField()
+						:WithName("Results")
+
 	if isstring(LuaFn) then
 		if Writeable then
-			local Description = Format("```\n%s\n```", LuaFn)
+			ResultDesc = Format(ResultDesc, LuaFn)
 
-			local Message = discord.messages.Begin()
-				:WithUsername("LUA")
-				:WithEmbed()
-					:WithAuthor()
-						:WithName("Compilation Error")
-						:End()
-					:WithDescription(Description)
-					:WithColorRGB(255, 0, 0)
-					:End()
+			Embed = Embed:WithColorRGB(255, 0, 0)
+			EmbedAuthor = EmbedAuthor:WithName("Compilation Error")
+
+			ResultField = ResultField:WithValue(ResultDesc)
+			Embed:End()
 
 			relay.conn.SendWebhookMessage(ChannelID, Message)
 		end
@@ -28,58 +40,33 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 	local Results = { pcall(LuaFn) }
 	if not Writeable then return end -- pcall ran it, so if we can't give feedback who cares what it's just done
 
-	-- TODO: This could be cleaned up with more variables and gotos, but meehhhhhhhhh
-	local Description = ""
-	local Message = discord.messages.Begin()
-		:WithUsername("LUA")
-		:WithEmbed()
+	local Status = table.remove(Results, 1)
 
-	local Result = table.remove(Results, 1)
+	if Status ~= true then
+		local ErrorMessage = (#Results > 0) and table.remove(Results, 1) or "Unknown Error"
+		ResultDesc = Format(ResultDesc, ErrorMessage)
 
-	if Result ~= true then
-		local ErrorMessage = #Results > 0 and table.remove(Results, 1) or "Unknown Error"
-		Description = Format("```\n%s\n```", ErrorMessage)
+		Embed = Embed:WithColorRGB(255, 0, 0)
+		EmbedAuthor = EmbedAuthor:WithName("Runtime Error")
+	else
+		Embed = Embed:WithColorRGB(0, 255, 0)
+		EmbedAuthor = EmbedAuthor:WithName("Ran LUA")
 
-		Message = Message:WithAuthor()
-							:WithName("Runtime Error")
-							:End()
-						:WithDescription(Description)
-						:WithColorRGB(255, 0, 0)
-						:End()
+		if #Results > 0 then
+			for i = 1, #Results do
+				-- LuaLS retardation moment
+				Results[i] = tostring(Results[i])
+			end
 
-		relay.conn.SendWebhookMessage(ChannelID, Message)
-
-		return
+			local RuntimeResults = table.concat(Results, ", ")
+			ResultDesc = Format(ResultDesc, RuntimeResults)
+		else
+			ResultDesc = Format(ResultDesc, "No values returned")
+		end
 	end
 
-	if #Results <= 0 then
-		Description = Format("```\n%s\n```", Lua)
-		Message = Message:WithAuthor()
-							:WithName("Ran LUA")
-							:End()
-						:WithDescription(Description)
-						:WithColorRGB(0, 255, 0)
-						:End()
-
-		relay.conn.SendWebhookMessage(ChannelID, Message)
-
-		return
-	end
-
-	for i = 1, #Results do
-		-- LuaLS retardation moment
-		Results[i] = tostring(Results[i])
-	end
-
-	local RuntimeResults = table.concat(Results, ", ")
-
-	Description = Format("```\n%s\n```", RuntimeResults)
-	Message = Message:WithAuthor()
-						:WithName("Ran LUA")
-						:End()
-					:WithDescription(Description)
-					:WithColorRGB(0, 255, 0)
-					:End()
+	ResultField = ResultField:WithValue(ResultDesc)
+	Embed:End()
 
 	relay.conn.SendWebhookMessage(ChannelID, Message)
 end)
