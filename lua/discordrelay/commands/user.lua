@@ -1,6 +1,6 @@
 relay.commands.Register("user", PERMISSION_NONE, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
-	if not relay.conn.IsChannel(ChannelID, "Write") then return end
+	if not relay.conn.IsChannel(ChannelID, "write") then return end
 
 	local SearchToken = Args[1]
 

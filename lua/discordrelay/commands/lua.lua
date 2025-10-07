@@ -2,7 +2,7 @@ local MaxFieldValue = 1024 - 11 -- See EmbedField.lua, -11 for the ```lua\n\n```
 
 relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
-	local Writeable = relay.conn.IsChannel(ChannelID, "Write") -- See rcon.lua
+	local Writeable = relay.conn.IsChannel(ChannelID, "write") -- See rcon.lua
 
 	local Lua = table.concat(Args, " ")
 	local LuaFn = CompileString(Lua, "DiscordRelay", false)

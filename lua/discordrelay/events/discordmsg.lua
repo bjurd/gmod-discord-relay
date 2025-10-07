@@ -24,7 +24,7 @@ end)
 hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::ReadDiscord", function(Event, Socket, Data)
 	if Event ~= "MESSAGE_CREATE" then return end
 
-	if not relay.conn.IsChannel(Data.channel_id, "Read") then return end
+	if not relay.conn.IsChannel(Data.channel_id, "read") then return end
 	if not relay.util.IsNonEmptyStr(Data.content) then return end
 
 	-- Don't Bot check here so Bot messages still relay, commands will be handled by discordcmd.lua

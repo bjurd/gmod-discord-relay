@@ -15,5 +15,5 @@ ulx.logWriteln = relay.detours.Create(ulx.logWriteln, function(Log)
 			:WithColorRGB(255, 150, 0)
 			:End()
 
-	relay.conn.BroadcastWebhookMessage(Message, "AdminLog")
+	relay.conn.BroadcastWebhookMessage(Message, "adminlog")
 end)

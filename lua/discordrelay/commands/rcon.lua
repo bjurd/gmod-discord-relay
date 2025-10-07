@@ -1,7 +1,7 @@
 relay.commands.Register("rcon", PERMISSION_ADMINISTRATOR, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
-	local Writeable = relay.conn.IsChannel(ChannelID, "Write")
-	-- if not relay.conn.IsChannel(ChannelID, "Write") then return end -- The command will still be ran, but you won't get feedback
+	local Writeable = relay.conn.IsChannel(ChannelID, "write")
+	-- if not relay.conn.IsChannel(ChannelID, "write") then return end -- The command will still be ran, but you won't get feedback
 
 	local Command = Args[1]
 

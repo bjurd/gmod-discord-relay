@@ -74,7 +74,7 @@ function WriteLogLn(Type, Message)
 
 	if not file.Append(LogPath, LogLine) then
 		-- This will spam like hell
-		Log(LOG_ERROR, "Failed to write log line - Check your config's LogFile path!")
+		Log(LOG_ERROR, "Failed to write log line - Check your config's logfile path!")
 	end
 end
 

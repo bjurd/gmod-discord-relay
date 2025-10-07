@@ -4,13 +4,14 @@ local config = relay.config
 
 --- Creates and connects a websocket to Discord
 function conn.Initialize()
-	if not relay.util.IsNonEmptyStr(config.Token) then
+	if not relay.util.IsNonEmptyStr(config.token) then
 		discord.logging.Log(LOG_ERROR, "No token provided in relay configuration file, the relay will be nonfunctional!")
 		return
 	end
 
 	if not conn.Instance then
-		conn.Instance = discord.socket.Create(config.API)
+		local Version = tonumber(config.api)
+		conn.Instance = discord.socket.Create(Version)
 	end
 
 	if not conn.Instance then
@@ -18,14 +19,14 @@ function conn.Initialize()
 		return
 	end
 
-	discord.socket.Connect(conn.Instance, config.Token)
+	discord.socket.Connect(conn.Instance, config.token)
 end
 
 --- Gets the list of channels within the config that have a certain flag set
 --- @param Flag string The flag to search for (eg Read, Write)
 --- @return table ChannelList, table KeyedChannelList
 function conn.FilterChannels(Flag) -- TODO: Cache the results of this
-	local MessageList = config.Messages
+	local MessageList = config.messages
 
 	local ChannelList = {}
 	local KeyedChannelList = {}
@@ -64,7 +65,7 @@ function conn.BroadcastMessage(Message, FilterFlag)
 		return
 	end
 
-	FilterFlag = FilterFlag or "Write"
+	FilterFlag = FilterFlag or "write"
 
 	local WriteableChannels = conn.FilterChannels(FilterFlag)
 	local Channels = #WriteableChannels
@@ -134,7 +135,7 @@ function conn.BroadcastWebhookMessage(Message, FilterFlag)
 		return
 	end
 
-	FilterFlag = FilterFlag or "Write"
+	FilterFlag = FilterFlag or "write"
 
 	local WriteableChannels = conn.FilterChannels(FilterFlag)
 	local Channels = #WriteableChannels

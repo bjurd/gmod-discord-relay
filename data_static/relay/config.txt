@@ -1,0 +1,102 @@
+"config"
+{
+	// Discord API version to use
+	// https://discord.com/developers/docs/reference#api-versioning
+	"api"		"10"
+
+
+
+	// The token of your Discord bot
+	// https://discord.com/developers/applications/(Bot_User_ID)/bot
+	"token"		""
+
+
+
+	// The file name/path of the log file. Only certain extensions are supported, see https://wiki.facepunch.com/gmod/file.Write
+	// Set to an empty string ("") to disable the log file
+	"logfile"	"relay/log.txt"
+
+
+
+	// Guilds (servers) and Channels where the bot will interact with messages
+	// Enable developer mode in Discord to find IDs
+	// https://discord.com/developers/docs/activities/building-an-activity#step-0-enable-developer-mode
+	"messages"
+	{
+		// Any number of Guilds and Channels are supported, but note that more guilds and channels and more actions within those Guilds and Channels
+		// WILL slow the bot down overall due to Discord API ratelimiting
+
+		// Format:
+		//	"guild id"
+		//	{
+		//		"channel id"
+		//		{
+		//			Whether or not the bot will relay Discord messages to in-game chat (Default is false)
+		//			"read"		"true/false"
+		//
+		//			Whether or not the bot will relay in-game messages to this channel (Default is false)
+		//			"write"		"true/false"
+		//
+		//			Whether or not this channel should be used to relay server log messages to Discord (Default is false)
+		//			If true this will bypass the "write" parameter
+		//			"adminlog"	"true/false"
+		//
+		//			Whether or not this channel should be used to relay server Lua error messages to Discord (Default is false)
+		//			If true this will bypass the "write" parameter
+		//			"errorlog"	"true/false"
+		//		}
+		//	}
+		//
+		// Example:
+		//	"1138420436397473852"
+		//	{
+		//		"1138420509491605534"
+		//		{
+		//			"read"		"true"
+		//			"write"		"true"
+		//		}
+		//
+		//		"1142410886305288252"
+		//		{
+		//			"adminlog"	"true"
+		//		}
+		//
+		//		"1352481876350079088"
+		//		{
+		//			"errorlog"	"true"
+		//		}
+		//	}
+	}
+
+
+
+	"commands"
+	{
+		// Prefix to be used for Discord commands. Set to an empty string ("") to disable commands
+		// Note that this is NOT case sensitive, it will be convered to lowercase during comparison
+		"prefix"	";"
+
+
+
+		// Permission levels for Discord commands and Roles
+		// You can use the permissions calculator at the bottom of the Discord Developer Portal's Bot page
+		// https://discord.com/developers/applications/(Bot_User_ID)/bot
+		"permissions"
+		{
+			// Permission levels default to their Discord values, values in this table are added on to the Discord permissions
+			// so you can extend a Role's privilege in the server without extending it in Discord
+			//
+			// If you want a Role to have access to all commands, you can give it the ADMINISTRATOR permission
+			//
+			// Each command has its own permission checks that's performed when the command is attempted to be ran,
+			// with permission levels being defined when the command is registered
+			//
+			// Format:
+			//	"role id"	"permissions integer"
+			//
+			// Example:
+			// 	"1142554498842251366"	"8" 			// ADMINISTRATOR
+			//	"1142386810761265162"	"2147483664"	// MANAGE_CHANNELS & USE_APPLICATION_COMMANDS
+		}
+	}
+}

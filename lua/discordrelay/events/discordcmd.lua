@@ -1,5 +1,5 @@
 hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::ProcessCommand", function(Socket, Data)
-	local Prefix = string.lower(relay.config.CommandPrefix)
+	local Prefix = string.lower(relay.config.commands.prefix)
 
 	if not relay.util.IsNonEmptyStr(Prefix) then
 		-- Commands have been disabled

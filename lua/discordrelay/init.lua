@@ -2,7 +2,8 @@ relay = relay or {}
 
 require("discord")
 
-include("config.lua")
+relay.config = include("config.lua")
+if not relay.config then return end
 
 include("util.lua")
 include("connection.lua")
@@ -28,13 +29,59 @@ include("commands/players.lua")
 include("commands/user.lua")
 
 --- Gets the path of the relay's log file
---- @return string|nil Path nil if logging is disabled
+--- @return string|nil Path nil if logging is disabled, empty string if the configured path is invalid
 function relay.GetLogPath()
-	if not relay.util.IsNonEmptyStr(relay.config.LogFile) then
+	local LogFile = relay.config.logfile
+
+	if not relay.util.IsNonEmptyStr(LogFile) then
 		return nil
 	end
 
-	return relay.config.LogFile
+	local LogFileName = string.GetFileFromFilename(LogFile)
+	local LogFileExt = string.GetExtensionFromFilename(LogFileName)
+
+	if LogFileName == "." .. LogFileExt then
+		-- The fuck are you doing
+		-- This will force an error in WriteLogLn to let you know
+		return ""
+	end
+
+	if not LogFileExt or string.len(LogFileExt) < 1 then
+		-- Fix your config, nooben
+		return ""
+	end
+
+	local Path = string.GetPathFromFilename(LogFile)
+	if Path == LogFile then return "" end
+	if string.len(Path) < 1 then return LogFileName end
+
+	local Blocks = string.Split(Path, "/")
+	if string.len(Blocks[#Blocks]) < 1 then table.remove(Blocks, #Blocks) end -- The final character is a / so we get a blank entry
+
+	-- Create folders so file.Write/Append doesn't fail
+	-- because it doesn't automatically create folders
+	for i = 1, #Blocks do
+		local Combined = {}
+
+		for j = 1, i do
+			table.insert(Combined, Blocks[j])
+		end
+
+		local CurrentPath = table.concat(Combined, "/")
+
+		if file.Exists(CurrentPath, "DATA") then
+			if not file.IsDir(CurrentPath, "DATA") then
+				discord.logging.Log(LOG_ERROR, "Something has gone wrong with the creation of relay log path! This should never happen!")
+				return ""
+			end
+
+			continue
+		end
+
+		file.CreateDir(CurrentPath)
+	end
+
+	return LogFile
 end
 
 --- Resets the relay's log file to blank

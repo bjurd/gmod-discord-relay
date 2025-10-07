@@ -69,7 +69,7 @@ function commands.RoleCanRun(Role, CommandData)
 	if discord.bigint.IsBitflagSet(RolePermissions, PERMISSION_ADMINISTRATOR) then return true end -- Admins bypass
 	if discord.bigint.IsBitflagSet(RolePermissions, CommandPermissions) then return true end -- Base check
 
-	local ExtraPermissions = relay.config.CommandPermissions[Role:GetID()]
+	local ExtraPermissions = relay.config.commands.permissions[Role:GetID()]
 	if not ExtraPermissions then return false end -- Nothing added from the config
 
 	local AddHi, AddLo = discord.bigint.AddBitflag(RolePermissions, ExtraPermissions)

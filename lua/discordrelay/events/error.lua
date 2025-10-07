@@ -28,5 +28,5 @@ hook.Add("OnLuaError", "DiscordRelay::ErrorLog", function(Message, Realm, Stack,
 			:WithColorRGB(255, 0, 0)
 			:End()
 
-	relay.conn.BroadcastWebhookMessage(Message, "ErrorLog")
+	relay.conn.BroadcastWebhookMessage(Message, "errorlog")
 end)

@@ -63,7 +63,7 @@ end
 
 relay.commands.Register("players", PERMISSION_NONE, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
-	if not relay.conn.IsChannel(ChannelID, "Write") then return end
+	if not relay.conn.IsChannel(ChannelID, "write") then return end
 
 	local Players = player.GetHumans()
 	local Bots = player.GetBots()
