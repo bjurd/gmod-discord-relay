@@ -84,6 +84,11 @@ end
 --- @return string
 function rutil.LimitUsername(Username)
 	Username = string.Left(Username, 32)
+
+	if string.len(Username) < 2 then
+		Username = "Player"
+	end
+
 	return Username
 end
 
