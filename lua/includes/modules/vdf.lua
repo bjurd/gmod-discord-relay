@@ -4,6 +4,8 @@
 	yoinked from this: https://github.com/qwreey/vdf-lua
 	with some fixes because it's a bit bunk
 
+	this won't be needed if https://github.com/Facepunch/garrysmod-requests/issues/2936 happens
+
 
 --]]
 
