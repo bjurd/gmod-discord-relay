@@ -97,6 +97,9 @@
 			// Example:
 			// 	"1142554498842251366"	"8" 			// ADMINISTRATOR
 			//	"1142386810761265162"	"2147483664"	// MANAGE_CHANNELS & USE_APPLICATION_COMMANDS
+			//
+			// Note that there are some limitations to which permissions are useable here because of how big the bitflags are,
+			// see permissions.lua for details
 		}
 	}
 }
