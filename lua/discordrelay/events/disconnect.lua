@@ -6,8 +6,8 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 	local Reason = Data.reason
 
 	-- Footers are technically limited to 2048 characters,
-	-- but 32 is more than enough for normal disconnect messages
-	Reason = string.Left(Reason, 32)
+	-- but 256 is more than enough for normal disconnect messages
+	Reason = string.Left(Reason, 256)
 	Reason = relay.util.MarkdownEscape(Reason)
 	-- Reason cleansing process is the same as relay.util.CleanUsername's
 
