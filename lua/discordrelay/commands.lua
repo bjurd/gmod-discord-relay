@@ -63,7 +63,7 @@ end
 --- @return boolean
 function commands.RoleCanRun(Role, CommandData)
 	local CommandPermissions = CommandData.Permissions
-	if CommandPermissions <= 0 then return true end -- Command has no restrictions
+	if CommandPermissions <= PERMISSION_NONE then return true end -- Command has no restrictions
 
 	local RolePermissions = Role:GetPermissionValue()
 	if discord.bigint.IsBitflagSet(RolePermissions, PERMISSION_ADMINISTRATOR) then return true end -- Admins bypass
