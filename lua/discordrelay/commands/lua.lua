@@ -1,4 +1,4 @@
-local MaxFieldValue = 1024 - 8 -- See EmbedField.lua, -8 for the ```\n\n```
+local MaxFieldValue = 1024 - 11 -- See EmbedField.lua, -11 for the ```lua\n\n```
 
 relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, Args)
 	local ChannelID = Data.channel_id
@@ -7,8 +7,8 @@ relay.commands.Register("lua", PERMISSION_ADMINISTRATOR, function(Socket, Data, 
 	local Lua = table.concat(Args, " ")
 	local LuaFn = CompileString(Lua, "DiscordRelay", false)
 
-	local LuaDesc = Format("```\n%s\n```", string.Left(Lua, MaxFieldValue))
-	local ResultDesc = "```\n%s\n```"
+	local LuaDesc = Format("```lua\n%s\n```", string.Left(Lua, MaxFieldValue))
+	local ResultDesc = "```lua\n%s\n```"
 
 	local Message = discord.messages.Begin()
 		:WithUsername("LUA")
