@@ -7,6 +7,7 @@ include("config.lua")
 include("util.lua")
 include("connection.lua")
 include("steam.lua")
+include("detours.lua")
 
 include("events/ready.lua")
 include("events/discordmsg.lua")
@@ -16,6 +17,7 @@ include("events/connect.lua")
 include("events/disconnect.lua")
 include("events/changename.lua")
 include("events/error.lua")
+include("events/adminlog.lua") -- Not really an event but shush
 
 include("commands.lua")
 include("commands/help.lua")
