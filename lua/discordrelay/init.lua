@@ -23,6 +23,7 @@ include("commands/status.lua")
 include("commands/rcon.lua")
 include("commands/lua.lua")
 include("commands/players.lua")
+include("commands/user.lua")
 
 --- Gets the path of the relay's log file
 --- @return string|nil Path nil if logging is disabled
