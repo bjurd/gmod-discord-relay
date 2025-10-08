@@ -2,7 +2,6 @@ util.AddNetworkString("DiscordRelay::ChatMessage")
 
 hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(Socket, Data)
 	if player.GetCount() < 1 then return end -- :P
-	if Data.webhook_id then return end -- Ignore these, they don't have a "member" property anyways
 
 	local User = discord.oop.ConstructNew("User", Data.author)
 	local Member = discord.oop.ConstructNew("Member", Data.member)
@@ -23,6 +22,7 @@ end)
 hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::ReadDiscord", function(Event, Socket, Data)
 	if Event ~= "MESSAGE_CREATE" then return end
 
+	if Data.webhook_id then return end -- Ignore these, they don't have a "member" property anyways
 	if not relay.conn.IsChannel(Data.channel_id, "read") then return end
 	if not relay.util.IsNonEmptyStr(Data.content) then return end
 
