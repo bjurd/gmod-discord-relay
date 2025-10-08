@@ -77,26 +77,26 @@ end
 
 --- Loads event files
 function relay.LoadEvents()
-	include("events/ready.lua")
-	include("events/discordmsg.lua")
-	include("events/discordcmd.lua")
-	include("events/chatmsg.lua")
-	include("events/connect.lua")
-	include("events/disconnect.lua")
-	include("events/changename.lua")
-	include("events/error.lua")
-	include("events/adminlog.lua") -- Not really an event but shush
+	include("discordrelay/events/ready.lua")
+	include("discordrelay/events/discordmsg.lua")
+	include("discordrelay/events/discordcmd.lua")
+	include("discordrelay/events/chatmsg.lua")
+	include("discordrelay/events/connect.lua")
+	include("discordrelay/events/disconnect.lua")
+	include("discordrelay/events/changename.lua")
+	include("discordrelay/events/error.lua")
+	include("discordrelay/events/adminlog.lua") -- Not really an event but shush
 end
 
 --- Loads command files
 function relay.LoadCommands()
-	include("commands.lua")
-	include("commands/help.lua")
-	include("commands/status.lua")
-	include("commands/rcon.lua")
-	include("commands/lua.lua")
-	include("commands/players.lua")
-	include("commands/user.lua")
+	include("discordrelay/commands.lua")
+	include("discordrelay/commands/help.lua")
+	include("discordrelay/commands/status.lua")
+	include("discordrelay/commands/rcon.lua")
+	include("discordrelay/commands/lua.lua")
+	include("discordrelay/commands/players.lua")
+	include("discordrelay/commands/user.lua")
 end
 
 --- Begins the initial connection
