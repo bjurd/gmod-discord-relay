@@ -46,9 +46,12 @@ relay.commands.Register("user", PERMISSION_NONE, function(Socket, Data, Args)
 
 	local Username = relay.util.CleanUsername(FoundPlayer:GetName())
 	local Nickname = relay.util.CleanUsername(FoundPlayer:Nick())
+	local UserGroup = relay.util.MarkdownEscape(FoundPlayer:GetUserGroup())
+	local Team = team.GetName(FoundPlayer:Team()) or "No Team"
+	Team = relay.util.MarkdownEscape(Team)
 
 	local Description = Format(
-		"**SteamID**: %s\n**SteamID64**: %s\n**Profile**: %s\n\n**UserID**: %s\n**UniqueID**: %s\n**Connection Time**: %s\n\n**Username**: %s\n**Nickname**: %s",
+		"**SteamID**: %s\n**SteamID64**: %s\n**Profile**: %s\n\n**UserID**: %s\n**UniqueID**: %s\n**Connection Time**: %s\n\n**Username**: %s\n**Nickname**: %s\n**User Group**: %s\n**Team**: %s",
 
 		SteamID,
 		SteamID64,
@@ -59,7 +62,9 @@ relay.commands.Register("user", PERMISSION_NONE, function(Socket, Data, Args)
 		ConnectionTime,
 
 		Username,
-		Nickname
+		Nickname,
+		UserGroup,
+		Team
 	)
 
 	local Message = discord.messages.Begin()
