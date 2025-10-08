@@ -10,24 +10,6 @@ include("connection.lua")
 include("steam.lua")
 include("detours.lua")
 
-include("events/ready.lua")
-include("events/discordmsg.lua")
-include("events/discordcmd.lua")
-include("events/chatmsg.lua")
-include("events/connect.lua")
-include("events/disconnect.lua")
-include("events/changename.lua")
-include("events/error.lua")
-include("events/adminlog.lua") -- Not really an event but shush
-
-include("commands.lua")
-include("commands/help.lua")
-include("commands/status.lua")
-include("commands/rcon.lua")
-include("commands/lua.lua")
-include("commands/players.lua")
-include("commands/user.lua")
-
 --- Gets the path of the relay's log file
 --- @return string|nil Path nil if logging is disabled, empty string if the configured path is invalid
 function relay.GetLogPath()
@@ -93,6 +75,30 @@ function relay.ResetLog()
 	end
 end
 
+--- Loads event files
+function relay.LoadEvents()
+	include("events/ready.lua")
+	include("events/discordmsg.lua")
+	include("events/discordcmd.lua")
+	include("events/chatmsg.lua")
+	include("events/connect.lua")
+	include("events/disconnect.lua")
+	include("events/changename.lua")
+	include("events/error.lua")
+	include("events/adminlog.lua") -- Not really an event but shush
+end
+
+--- Loads command files
+function relay.LoadCommands()
+	include("commands.lua")
+	include("commands/help.lua")
+	include("commands/status.lua")
+	include("commands/rcon.lua")
+	include("commands/lua.lua")
+	include("commands/players.lua")
+	include("commands/user.lua")
+end
+
 --- Begins the initial connection
 function relay.Init()
 	-- https://github.com/Facepunch/garrysmod-issues/issues/3001
@@ -121,6 +127,9 @@ end
 
 --- The launcher for the relay
 function relay.Launch()
+	relay.LoadEvents()
+	relay.LoadCommands()
+
 	hook.Add("GetGameDescription", "DiscordRelay::InitialBroadcast", relay.Init)
 end
 
