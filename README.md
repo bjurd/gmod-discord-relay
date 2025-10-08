@@ -47,9 +47,9 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 	git stash pop
 	```
 
-	> [!WARNING]
-	> If you don't stash before pulling, it's likely git will overwrite your config and other changes you've made
-	> with the default, blank config. Make sure to stash if you want to keep your changes and to pop the stash
-	> after pull completes.
-
 	</details>
+
+> [!WARNING]
+> If you don't stash before pulling, it's likely git will overwrite your config and other changes you've made
+> with the default, blank config. Make sure to stash if you want to keep your changes and to pop the stash
+> after pull completes.
