@@ -1,7 +1,7 @@
 relay.commands = relay.commands or {}
 local commands = relay.commands
 
-commands.List = {} -- Wipe this out every time
+commands.List = commands.List or {}
 
 --- Adds a command callback to the DiscordRelay::FireCommand hook group
 --- @param Name string The name of the command, will be converted to lowercase and trimmed

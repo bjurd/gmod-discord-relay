@@ -2,7 +2,7 @@ relay = relay or {}
 
 require("discord")
 
-relay.config = include("config.lua")
+relay.config = relay.config or include("config.lua")
 if not relay.config then return end
 
 include("util.lua")
