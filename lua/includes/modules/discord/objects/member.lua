@@ -61,4 +61,31 @@ function MEMBER:GetHighestRole(Roles)
 	return Highest
 end
 
+--- Returns the Role color used for the member's name
+--- @param Roles table The Role table from roles.GetGuildRoles
+--- @return Color
+function MEMBER:GetNameColor(Roles)
+	local Highest
+	local MemberRoles = self:GetRoles()
+
+	for i = 1, #Roles do
+		local Role = Roles[i]
+		if Role:GetColorDecimal() == 0 then continue end
+
+		if table.HasValue(MemberRoles, Role:GetID()) then -- HasValue is icky, but the Member role list is sequential
+			if not Highest then Highest = Role end
+
+			if Role:GetPosition() > Highest:GetPosition() then
+				Highest = Role
+			end
+		end
+	end
+
+	if not Highest then
+		return Color(255, 255, 255, 255)
+	else
+		return Highest:GetColor()
+	end
+end
+
 return MEMBER

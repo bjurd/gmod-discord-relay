@@ -8,10 +8,8 @@ hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(
 
 	discord.roles.GetGuildRoles(Socket, Data.guild_id, function(Roles)
 		-- There's no other endpoint for Role data than this one unfortunately
-		local Highest = Member:GetHighestRole(Roles)
-
 		local Name = relay.util.GetMemberName(User, Member)
-		local NameColor = Highest:GetColor()
+		local NameColor = Member:GetNameColor(Roles)
 
 		net.Start("DiscordRelay::ChatMessage")
 			net.WriteColor(NameColor, false)
