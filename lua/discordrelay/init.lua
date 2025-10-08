@@ -93,7 +93,8 @@ function relay.ResetLog()
 	end
 end
 
-hook.Add("GetGameDescription", "DiscordRelay::InitialBroadcast", function()
+--- Begins the initial connection
+function relay.Init()
 	-- https://github.com/Facepunch/garrysmod-issues/issues/3001
 	-- Wait until the server is actually joinable to begin
 	local IP = game.GetIPAddress()
@@ -116,4 +117,12 @@ hook.Add("GetGameDescription", "DiscordRelay::InitialBroadcast", function()
 
 
 	relay.conn.Initialize()
-end)
+end
+
+--- The launcher for the relay
+function relay.Launch()
+	hook.Add("GetGameDescription", "DiscordRelay::InitialBroadcast", relay.Init)
+end
+
+-- Let's go!
+hook.Add("InitPostEntity", "DiscordRelay::Launch", relay.Launch)
