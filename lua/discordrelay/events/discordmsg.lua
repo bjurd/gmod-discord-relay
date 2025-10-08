@@ -2,6 +2,7 @@ util.AddNetworkString("DiscordRelay::ChatMessage")
 
 hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(Socket, Data)
 	if player.GetCount() < 1 then return end -- :P
+	if Data.webhook_id then return end -- Ignore these, they don't have a "member" property anyways
 
 	local User = discord.oop.ConstructNew("User", Data.author)
 	local Member = discord.oop.ConstructNew("Member", Data.member)
