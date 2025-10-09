@@ -107,6 +107,7 @@ LoadFile("Permissions")
 LoadFile("Colors")
 LoadFile("BigInt")
 LoadFile("Cache")
+LoadFile("CloseCode")
 
 LoadFile("OOP")
 LoadObjectFile("Role")
