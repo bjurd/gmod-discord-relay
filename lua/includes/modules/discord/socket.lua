@@ -6,7 +6,17 @@ end
 
 module("socket", package.discord)
 
-SocketGatewayURL = "wss://gateway.discord.gg/?v=%d&encoding=json"
+SocketGatewayParams = "?v=%d&encoding=json"
+SocketGatewayURL = "wss://gateway.discord.gg/"
+
+--- Keys to ignore when copying a Socket for resume
+NonCopyKeys = {
+	["__CppUserData"] = true,
+	["onConnected"] = true,
+	["onDisconnected"] = true,
+	["onMessage"] = true,
+	["onError"] = true
+}
 
 --- @meta
 --- @alias WEBSOCKET table
@@ -28,6 +38,9 @@ end
 --- @param self WEBSOCKET A GWSockets socket instance
 function SOCKET_OnDisconnected(self)
 	logging.Log(LOG_WARNING, "Socket disconnected")
+
+	-- TODO: Check close code, don't know how to do that from here since there's no other arguments
+	socket.Resume(self)
 end
 
 --- Callback for when the socket receives a message, internal use only
@@ -98,7 +111,8 @@ function Create(API)
 		logging.Log(LOG_WARNING, "Creating a socket with deprecated API version %d", API)
 	end
 
-	local Socket = GWSockets.createWebSocket(Format(SocketGatewayURL, API))
+	local Gateway = SocketGatewayURL .. SocketGatewayParams
+	local Socket = GWSockets.createWebSocket(Format(Gateway, API))
 
 	if Socket then
 		logging.Log(LOG_SUCCESS, "Created a socket with API version %d", API)
@@ -120,6 +134,47 @@ function Connect(Socket, Token)
 	Socket.Token = Token
 
 	Socket:open()
+end
+
+--- Sends the resume operation for a socket, this will destroy it and create a new one
+--- @param Socket WEBSOCKET A GWSockets socket instance
+--- @return WEBSOCKET|nil Socket The newly created socket instance, nil on failure
+function Resume(Socket)
+	local SocketData = {}
+
+	for Key, Value in next, Socket do
+		if NonCopyKeys[Key] then continue end
+		SocketData[Key] = Value
+	end
+
+	Socket:close()
+
+	-- Make the new friend
+	local ResumeGateway = SocketData.ResumeGateway
+
+	if not ResumeGateway or string.len(ResumeGateway) < 1 then
+		logging.Log(LOG_ERROR, "Failed to resume socket session %s", SocketData.SessionID)
+		return nil
+	end
+
+	local Gateway = ResumeGateway .. SocketGatewayParams
+	local NewSocket = GWSockets.createWebSocket(Format(Gateway, SocketData.API))
+
+	for Key, Value in next, SocketData do
+		NewSocket[Key] = Value
+	end
+
+	Prepare(NewSocket)
+	Connect(NewSocket, SocketData.Token)
+
+	logging.Log(LOG_SUCCESS, "Starting socket resume for %s", SocketData.SessionID)
+
+	-- Let others know about this so we can replace the socket instance
+	-- because you can't change a socket's URL once it's been created
+	-- Thanks GWSockets!
+	hook.Run("DiscordRelay::SocketResume", Socket, NewSocket)
+
+	return NewSocket
 end
 
 --- Writes a data table by converting it to JSON

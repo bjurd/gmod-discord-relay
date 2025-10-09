@@ -22,6 +22,16 @@ function conn.Initialize()
 	discord.socket.Connect(conn.Instance, config.token)
 end
 
+--- Called from DiscordRelay::SocketResume
+--- @param OldSocket WEBSOCKET
+--- @param NewSocket WEBSOCKET
+function conn.RenewSocket(OldSocket, NewSocket)
+	if OldSocket == conn.Instance then
+		conn.Instance = NewSocket
+	end
+end
+hook.Add("DiscordRelay::SocketResume", "DEFAULT::ConnectionInstance", conn.RenewSocket)
+
 --- Gets the list of channels within the config that have a certain flag set
 --- @param Flag string The flag to search for (eg Read, Write)
 --- @return table ChannelList, table KeyedChannelList

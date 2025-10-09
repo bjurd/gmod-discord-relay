@@ -67,7 +67,7 @@ hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::READY", function(Event, Socket
 	if Event ~= "READY" then return end
 
 	Socket.SessionID = Data.session_id
-	-- TODO: Resume
+	Socket.ResumeGateway = Data.resume_gateway_url
 
 	if isnumber(Socket.HeartbeatInterval) then
 		local HearbeatIdentifier = Format("DiscordRelay::Heartbeat::%s", Socket.SessionID)
@@ -118,8 +118,25 @@ hook.Add("DiscordRelay::FireOperation", "DEFAULT::INVALID_SESSION", function(Ope
 		timer.Remove(Socket.HearbeatIdentifier)
 	end
 
-	if Data.d == true then
-		-- TODO: Resume if possible
+	if Data.d == true then -- This is incredibly rare and almost never happens, but can
+		local NewSocket = socket.Resume(Socket)
+
+		if NewSocket then
+			Socket = nil
+		else
+			-- socket.Resume already logs
+			return
+		end
+
+		logging.Log(LOG_SUCCESS, "Sending session resume for %s", NewSocket.SessionID)
+
+		local DataPacket = CreateDataPacket(NewSocket, OPERATION_RESUME)
+		local PacketData = DataPacket.d
+
+		PacketData.session_id = NewSocket.SessionID
+		PacketData.seq = NewSocket.SequenceNumber or 0
+
+		socket.WriteData(NewSocket, DataPacket)
 	end
 end)
 
