@@ -114,10 +114,6 @@ hook.Add("DiscordRelay::FireOperation", "DEFAULT::INVALID_SESSION", function(Ope
 
 	logging.Log(LOG_ERROR, "Socket has an invalid session!")
 
-	if isstring(Socket.HearbeatIdentifier) then
-		timer.Remove(Socket.HearbeatIdentifier)
-	end
-
 	if Data.d == true then -- This is incredibly rare and almost never happens, but can
 		local NewSocket = socket.Resume(Socket)
 

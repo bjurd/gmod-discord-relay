@@ -39,6 +39,10 @@ end
 function SOCKET_OnDisconnected(self)
 	logging.Log(LOG_WARNING, "Socket disconnected")
 
+	if isstring(self.HearbeatIdentifier) then
+		timer.Remove(self.HearbeatIdentifier)
+	end
+
 	-- TODO: Check close code, don't know how to do that from here since there's no other arguments
 	socket.Resume(self)
 end
