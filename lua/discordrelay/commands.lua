@@ -19,8 +19,21 @@ function commands.Register(Name, Permissions, Callback)
 	discord.logging.DevLog(LOG_SUCCESS, "Registered command %s", Name)
 end
 
---- Fires command callbacks for the given name if it exists
+--- Fires command callbacks, used internally by commands.Process
+--- @param CommandData table
+--- @param Socket WEBSOCKET
+--- @param Data table
+--- @param Args table
+function commands.Fire(CommandData, Socket, Data, Args)
+	discord.logging.DevLog(LOG_SUCCESS, "Firing command %s", Name)
+	CommandData.Callback(Socket, Data, Args)
+end
+
+--- Processes and fires command callbacks for the given name if it exists
 --- @param Name string
+--- @param Socket WEBSOCKET
+--- @param Data table
+--- @param Args table
 function commands.Process(Name, Socket, Data, Args)
 	local CommandData = commands.List[Name]
 
@@ -36,6 +49,12 @@ function commands.Process(Name, Socket, Data, Args)
 		return
 	end
 
+	if CommandData.Permissions <= PERMISSION_NONE then
+		-- Don't bother checking role information if the command is unrestricted
+		commands.Fire(CommandData, Socket, Data, Args)
+		return
+	end
+
 	local Member = discord.oop.ConstructNew("Member", Data.member)
 
 	discord.roles.GetGuildRoles(Socket, Data.guild_id, function(Roles)
@@ -45,9 +64,7 @@ function commands.Process(Name, Socket, Data, Args)
 			local Role = Roles[i]
 
 			if table.HasValue(MemberRoles, Role:GetID()) and commands.RoleCanRun(Role, CommandData) then
-				discord.logging.DevLog(LOG_SUCCESS, "Firing command %s", Name)
-				CommandData.Callback(Socket, Data, Args)
-
+				commands.Fire(CommandData, Socket, Data, Args)
 				return
 			end
 		end
