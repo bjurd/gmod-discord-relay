@@ -97,7 +97,6 @@ function relay.LoadCommands()
 	include("discordrelay/commands/lua.lua")
 	include("discordrelay/commands/players.lua")
 	include("discordrelay/commands/user.lua")
-	include("discordrelay/commands/virus.lua")
 end
 
 --- Begins the initial connection
