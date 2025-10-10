@@ -61,69 +61,74 @@ local function AddChunkedField(Message, BaseName, Value)
 	return Message
 end
 
-relay.commands.Register("players", PERMISSION_NONE, function(Socket, Data, Args)
-	local ChannelID = Data.channel_id
-	if not relay.conn.IsChannel(ChannelID, "write") then return end
+local Players = relay.commands.New()
+	:WithName("players")
+	:WithDescription("Shows the current list of players on the server")
+	:WithCallback(function(Socket, Data, Args)
+		local ChannelID = Data.channel_id
+		if not relay.conn.IsChannel(ChannelID, "write") then return end
 
-	local Players = player.GetHumans()
-	local Bots = player.GetBots()
+		local Players = player.GetHumans()
+		local Bots = player.GetBots()
 
-	table.sort(Players, SortPlayers)
-	table.sort(Bots, SortPlayers)
+		table.sort(Players, SortPlayers)
+		table.sort(Bots, SortPlayers)
 
-	local Message = discord.messages.Begin()
-			:WithUsername("Player List")
-			:WithEmbed()
+		local Message = discord.messages.Begin()
+				:WithUsername("Player List")
+				:WithEmbed()
 
-	local PlayerCount = #Players
-	local BotCount = #Bots
+		local PlayerCount = #Players
+		local BotCount = #Bots
 
-	if PlayerCount == 0 and BotCount == 0 then
-		Message = Message
-					:WithDescription("There are no players online")
-					:WithColorRGB(255, 150, 0)
+		if PlayerCount == 0 and BotCount == 0 then
+			Message = Message
+						:WithDescription("There are no players online")
+						:WithColorRGB(255, 150, 0)
+						:End()
+
+			relay.conn.SendWebhookMessage(ChannelID, Message)
+
+			return
+		end
+
+		local PlayerDesc = "There are no human players online"
+		local BotDesc = "There are no bot players online"
+
+		if PlayerCount > 0 then
+			local PlayerList = {}
+
+			for i = 1, PlayerCount do
+				local Player = Players[i]
+				local Name = relay.util.MarkdownEscape(Player:Nick())
+				local SteamID = relay.util.MarkdownEscape(Player:SteamID()) -- SteamIDs have _'s
+
+				table.insert(PlayerList, Format("- %s (%s)", Name, SteamID))
+			end
+
+			PlayerDesc = table.concat(PlayerList, "\n")
+		end
+
+		if BotCount > 0 then
+			local BotList = {}
+
+			for i = 1, BotCount do
+				local Bot = Bots[i]
+				local Name = relay.util.MarkdownEscape(Bot:Nick())
+
+				table.insert(BotList, Format("- %s", Name))
+			end
+
+			BotDesc = table.concat(BotList, "\n")
+		end
+
+		Message = AddChunkedField(Message, "Humans", PlayerDesc)
+		Message = AddChunkedField(Message, "Bots", BotDesc)
+
+		Message = Message:WithColorRGB(255, 150, 0)
 					:End()
 
 		relay.conn.SendWebhookMessage(ChannelID, Message)
+	end)
 
-		return
-	end
-
-	local PlayerDesc = "There are no human players online"
-	local BotDesc = "There are no bot players online"
-
-	if PlayerCount > 0 then
-		local PlayerList = {}
-
-		for i = 1, PlayerCount do
-			local Player = Players[i]
-			local Name = relay.util.MarkdownEscape(Player:Nick())
-			local SteamID = relay.util.MarkdownEscape(Player:SteamID()) -- SteamIDs have _'s
-
-			table.insert(PlayerList, Format("- %s (%s)", Name, SteamID))
-		end
-
-		PlayerDesc = table.concat(PlayerList, "\n")
-	end
-
-	if BotCount > 0 then
-		local BotList = {}
-
-		for i = 1, BotCount do
-			local Bot = Bots[i]
-			local Name = relay.util.MarkdownEscape(Bot:Nick())
-
-			table.insert(BotList, Format("- %s", Name))
-		end
-
-		BotDesc = table.concat(BotList, "\n")
-	end
-
-	Message = AddChunkedField(Message, "Humans", PlayerDesc)
-	Message = AddChunkedField(Message, "Bots", BotDesc)
-
-	Message = Message:WithColorRGB(255, 150, 0)
-				:End()
-
-	relay.conn.SendWebhookMessage(ChannelID, Message)
-end)
+relay.commands.Register(Players)
