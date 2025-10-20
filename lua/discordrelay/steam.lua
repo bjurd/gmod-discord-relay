@@ -6,6 +6,9 @@ local HTTP = CHTTP or HTTP -- CHTTP not required for this
 rsteam.CacheKey = "AvatarCache"
 rsteam.ProfileURL = "https://steamcommunity.com/profiles/%s?xml=1"
 
+rsteam.AvatarFull = "<avatarFull>%s*<!%[CDATA%[(.-)%]%]>%s*</avatarFull>"
+rsteam.AvatarMedium = "<avatarMedium>%s*<!%[CDATA%[(.-)%]%]>%s*</avatarMedium>"
+
 function rsteam.AVATAR_GET_Success(Code, Body, Callback) --  These functions don't match the usual format, but that's okay :^)
 	if Code ~= 200 then
 		discord.logging.DevLog(LOG_ERROR, "Failed to fetch player avatar, code %d", Code)
@@ -73,7 +76,8 @@ function rsteam.FetchPlayerAvatar(SteamID64, Callback)
 			return
 		end
 
-		local AvatarURL = string.match(Data, "<avatarMedium>%s*<!%[CDATA%[(.-)%]%]>%s*</avatarMedium>")
+		local AvatarURL = string.match(Data, rsteam.AvatarFull)
+		AvatarURL = AvatarURL or string.match(Data, rsteam.AvatarMedium)
 
 		if not AvatarURL then
 			rsteam.AVATAR_GET_Fail("Profile has no avatar data", Callback)
