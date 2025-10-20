@@ -6,6 +6,8 @@ end
 
 module("socket", package.discord)
 
+GWSockets.addVerifyPath("/etc/ssl/certs") -- Thank you Fredy very cool
+
 SocketGatewayParams = "?v=%d&encoding=json"
 SocketGatewayURL = "wss://gateway.discord.gg/"
 
