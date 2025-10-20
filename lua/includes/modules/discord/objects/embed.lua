@@ -5,6 +5,7 @@
 --- @field Color number
 --- @field Footer EmbedFooter
 --- @field Author EmbedAuthor
+--- @field Thumbnail EmbedThumbnail
 --- @field Fields table
 local EMBED = {}
 EMBED.__index = EMBED
@@ -16,6 +17,7 @@ function EMBED:__new()
 	self.Color = 0
 	self.Footer = oop.CreateNew("EmbedFooter")
 	self.Author = oop.CreateNew("EmbedAuthor")
+	self.Thumbnail = oop.CreateNew("EmbedThumbnail")
 	self.Fields = {}
 end
 
@@ -30,6 +32,7 @@ function EMBED:__json()
 
 	SelfParse.footer = self.Footer:__json()
 	SelfParse.author = self.Author:__json()
+	SelfParse.thumbnail = self.Thumbnail:__json()
 
 	for i = 1, #self.Fields do
 		table.insert(SelfParse.fields, self.Fields[i]:__json())
@@ -86,6 +89,14 @@ function EMBED:WithAuthor()
 	self.Author.Embed = self
 
 	return self.Author
+end
+
+--- Begins EmbedThumbnail
+--- @return EmbedThumbnail Thumbnail
+function EMBED:WithThumbnail()
+	self.Thumbnail.Embed = self
+
+	return self.Thumbnail
 end
 
 --- Begins EmbedField

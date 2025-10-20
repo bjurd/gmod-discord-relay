@@ -70,14 +70,23 @@ local User = relay.commands.New()
 			Team
 		)
 
-		local Message = discord.messages.Begin()
+		relay.steam.GetPlayerAvatar(FoundPlayer, function(AvatarURL)
+			local Message = discord.messages.Begin()
 			:WithUsername("Player Info")
 			:WithEmbed()
 				:WithDescription(Description)
 				:WithColorRGB(255, 150, 0)
-				:End()
 
-		relay.conn.SendWebhookMessage(ChannelID, Message)
+			if AvatarURL then
+				Message = Message:WithThumbnail()
+					:WithURL(AvatarURL)
+					:End()
+			end
+
+			Message = Message:End() -- Embed
+
+			relay.conn.SendWebhookMessage(ChannelID, Message)
+		end)
 	end)
 
 relay.commands.Register(User)
