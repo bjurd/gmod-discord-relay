@@ -11,6 +11,8 @@ GWSockets.addVerifyPath("/etc/ssl/certs") -- Thank you Fredy very cool
 SocketGatewayParams = "?v=%d&encoding=json"
 SocketGatewayURL = "wss://gateway.discord.gg/"
 
+List = setmetatable(List or {}, { ["__mode"] = "k" })
+
 --- Keys to ignore when copying a Socket for resume
 NonCopyKeys = {
 	["__CppUserData"] = true,
@@ -28,7 +30,7 @@ NonCopyKeys = {
 function SOCKET_OnConnected(self)
 	if not isstring(self.Token) then
 		logging.Log(LOG_ERROR, "Tried to connect socket with no token")
-		self:closeNow()
+		Close(self, true)
 
 		return
 	end
@@ -126,6 +128,8 @@ function Create(API)
 		Socket.API = API
 		Prepare(Socket)
 
+		List[Socket] = true
+
 		return Socket
 	else
 		logging.Log(LOG_WARNING, "Failed to create a socket with API version %d", API)
@@ -142,6 +146,27 @@ function Connect(Socket, Token)
 	Socket:open()
 end
 
+--- Closes a socket (if it's connected) and removes it from the list
+--- @param Socket WEBSOCKET A GWSockets socket instance
+--- @param Instant boolean? Whether or not to instantly close. Defaults to false
+function Close(Socket, Instant)
+	if Socket:isConnected() then
+		if Instant then
+			Socket:closeNow()
+		else
+			Socket:close()
+		end
+	end
+
+	List[Socket] = nil
+
+	if Socket.SessionID then
+		logging.DevLog(LOG_SUCCESS, "Closed socket session %s", Socket.SessionID)
+	else
+		logging.DevLog(LOG_WARNING, "Closed unknown socket %s", Socket)
+	end
+end
+
 --- Sends the resume operation for a socket, this will destroy it and create a new one
 --- @param Socket WEBSOCKET A GWSockets socket instance
 --- @return WEBSOCKET|nil Socket The newly created socket instance, nil on failure
@@ -153,7 +178,7 @@ function Resume(Socket)
 		SocketData[Key] = Value
 	end
 
-	Socket:close()
+	Close(Socket)
 
 	-- Make the new friend
 	local ResumeGateway = SocketData.ResumeGateway
@@ -210,3 +235,16 @@ function WriteHeartbeat(Socket)
 
 	WriteData(Socket, Data)
 end
+
+--- Closes all sockets in the list
+function CloseSockets()
+	for Socket, Status in next, List do
+		if not Status then
+			logging.Log(LOG_WARNING, "Got a falsy status Socket, this should never happen!")
+			continue
+		end
+
+		Close(Socket)
+	end
+end
+hook.Add("ShutDown", "DiscordRelay::CloseSockets", CloseSockets)
