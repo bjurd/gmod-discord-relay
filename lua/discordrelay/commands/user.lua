@@ -1,3 +1,10 @@
+--- @param Info table
+--- @param Label string
+--- @param Text any
+local function AddFormatLabel(Info, Label, Text)
+	table.insert(Info, Format("**%s**: %s", Label, Text))
+end
+
 local User = relay.commands.New()
 	:WithName("user")
 	:WithDescription("Shows information about a user. Name, SteamID or SteamID64")
@@ -39,36 +46,32 @@ local User = relay.commands.New()
 			return
 		end
 
-		local SteamID = relay.util.MarkdownEscape(FoundPlayer:SteamID())
-		local SteamID64 = FoundPlayer:SteamID64()
-		local ProfileURL = Format("https://steamcommunity.com/profiles/%s", SteamID64)
+		local IsBot = FoundPlayer:IsBot()
 
-		local UserID = FoundPlayer:UserID()
-		local UniqueID = FoundPlayer:UniqueID()
-		local ConnectionTime = relay.util.FormatTime(FoundPlayer:TimeConnected())
+		local UserInfo = {}
 
-		local Username = relay.util.CleanUsername(FoundPlayer:GetName())
-		local Nickname = relay.util.CleanUsername(FoundPlayer:Nick())
-		local UserGroup = relay.util.MarkdownEscape(FoundPlayer:GetUserGroup())
-		local Team = team.GetName(FoundPlayer:Team()) or "No Team"
-		Team = relay.util.MarkdownEscape(Team)
+		AddFormatLabel(UserInfo, "SteamID", relay.util.MarkdownEscape(FoundPlayer:SteamID()))
+		AddFormatLabel(UserInfo, "SteamID64", FoundPlayer:SteamID64())
+		AddFormatLabel(UserInfo, "AccountID", FoundPlayer:AccountID())
 
-		local Description = Format(
-			"**SteamID**: %s\n**SteamID64**: %s\n**Profile**: %s\n\n**UserID**: %s\n**UniqueID**: %s\n**Connection Time**: %s\n\n**Username**: %s\n**Nickname**: %s\n**User Group**: %s\n**Team**: %s",
+		if not IsBot then
+			AddFormatLabel(UserInfo, "Profile", Format("https://steamcommunity.com/profiles/%s", FoundPlayer:SteamID64()))
+		end
 
-			SteamID,
-			SteamID64,
-			ProfileURL,
+		table.insert(UserInfo, "")
 
-			UserID,
-			UniqueID,
-			ConnectionTime,
+		AddFormatLabel(UserInfo, "UserID", FoundPlayer:UserID())
+		AddFormatLabel(UserInfo, "UniqueID", FoundPlayer:UniqueID())
+		AddFormatLabel(UserInfo, "Connection Time", relay.util.FormatTime(FoundPlayer:TimeConnected()))
 
-			Username,
-			Nickname,
-			UserGroup,
-			Team
-		)
+		table.insert(UserInfo, "")
+
+		AddFormatLabel(UserInfo, "Username", relay.util.CleanUsername(FoundPlayer:GetName()))
+		AddFormatLabel(UserInfo, "Nickname", relay.util.CleanUsername(FoundPlayer:Nick()))
+		AddFormatLabel(UserInfo, "Group", relay.util.MarkdownEscape(FoundPlayer:GetUserGroup()))
+		AddFormatLabel(UserInfo, "Team", relay.util.MarkdownEscape(team.GetName(FoundPlayer:Team())))
+
+		local Description = table.concat(UserInfo, "\n")
 
 		relay.steam.GetPlayerAvatar(FoundPlayer, function(AvatarURL)
 			local Message = discord.messages.Begin()
