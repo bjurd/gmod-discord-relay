@@ -62,7 +62,11 @@ local User = relay.commands.New()
 
 		AddFormatLabel(UserInfo, "UserID", FoundPlayer:UserID())
 		AddFormatLabel(UserInfo, "UniqueID", FoundPlayer:UniqueID())
-		AddFormatLabel(UserInfo, "Connection Time", relay.util.FormatTime(FoundPlayer:TimeConnected()))
+		AddFormatLabel(UserInfo, "Session Time", relay.util.FormatTime(FoundPlayer:TimeConnected()))
+
+		if isfunction(FoundPlayer.GetUTimeTotalTime) then
+			AddFormatLabel(UserInfo, "Play Time", relay.util.FormatTime(FoundPlayer:GetUTimeTotalTime()))
+		end
 
 		table.insert(UserInfo, "")
 
