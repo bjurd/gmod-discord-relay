@@ -24,13 +24,15 @@ end
 --- @param Seconds number The time in seconds
 --- @return string
 function rutil.FormatTime(Seconds)
-	local Days = math.floor(Seconds / 86400)
+	local Weeks = math.floor(Seconds / 604800)
+	local Days = math.floor((Seconds / 86400) % 7)
 	local Hours = math.floor((Seconds / 3600) % 24)
 	local Minutes = math.floor((Seconds / 60) % 60)
 	local Seconds = math.floor(Seconds % 60)
 
 	local Parts = {}
 
+	if Weeks > 0 then Parts[#Parts + 1] = Weeks .. "w" end
 	if Days > 0 then Parts[#Parts + 1] = Days .. "d" end
 	if Hours > 0 then Parts[#Parts + 1] = Hours .. "h" end
 	if Minutes > 0 then Parts[#Parts + 1] = Minutes .. "m" end
