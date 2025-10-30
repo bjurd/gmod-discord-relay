@@ -100,8 +100,7 @@ local RelayUpdate = relay.commands.New()
 
 		local RelayPath = SafeShell("find -L ./garrysmod/addons -mindepth 3 -maxdepth 5 -type f -path '*/lua/autorun/server/discordrelay.lua' -printf '%h\n' | sed 's|/lua/autorun/server$||'")
 
-		if isstring(RelayPath) then
-			-- LuaLS fail #43205
+		if RelayPath and isstring(RelayPath) then
 			RelayPath = string.Trim(RelayPath)
 		end
 
