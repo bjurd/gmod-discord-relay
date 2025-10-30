@@ -1,5 +1,13 @@
+local Readied = false
+
 hook.Add("DiscordRelay::DispatchEvent", "DEFAULT::SendOnlineMessage", function(Event, Socket)
 	if Event ~= "READY" then return end
+
+	if Readied then
+		return
+	else
+		Readied = true
+	end
 
 	local Footer = Format("IP Address: %s", game.GetIPAddress())
 
