@@ -41,6 +41,8 @@ local RelayUpdate = relay.commands.New()
 				:WithDescription("```Error during update, check server console for details.```")
 				:WithColorRGB(255, 0, 0)
 
+		discord.logging.DevLog(LOG_NORMAL, "Starting relay update via git")
+
 		if not util.IsBinaryModuleInstalled("shell") then
 			discord.logging.Log(LOG_ERROR, "Missing gmsv_shell module")
 			return EarlyReturn(ChannelID, Message) -- goto's crying about scope jumps is annoying
@@ -65,6 +67,9 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
+		discord.logging.DevLog(LOG_SUCCESS, "Found relay install at %s", RelayPath)
+
+		discord.logging.DevLog(LOG_NORMAL, "Stashing relay")
 		local StashStatus = UpdateShell(RelayPath, "git stash push")
 
 		if not StashStatus then
@@ -72,6 +77,7 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
+		discord.logging.DevLog(LOG_NORMAL, "Pulling relay")
 		local PullStatus = UpdateShell(RelayPath, "git pull")
 
 		if not PullStatus then
@@ -81,19 +87,22 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
+		discord.logging.DevLog(LOG_NORMAL, "Popping relay")
 		local PopStatus = UpdateShell(RelayPath, "git stash pop")
 
 		if not PopStatus then
-			Message = Message:WithColorRGB(255, 150, 0)
-
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to pop stash, but the update completed. Make sure to pop the stash manually before updating again.")
-			return EarlyReturn(ChannelID, Message)
+
+			Message = Message:WithDescription("```Successfully updated relay, check server console for details.``")
+						:WithColorRGB(255, 150, 0)
 		else
-			Message = Message:WithColorRGB(0, 255, 0)
+			Message = Message:WithDescription("```Successfully updated relay```")
+						:WithColorRGB(0, 255, 0)
 		end
 
-		Message = Message:WithDescription("```Successfully updated relay```")
-					:End()
+		discord.logging.DevLog(LOG_NORMAL, "Relay update concluded")
+
+		Message = Message:End()
 
 		relay.conn.SendWebhookMessage(ChannelID, Message)
 	end)
