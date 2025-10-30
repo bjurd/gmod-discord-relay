@@ -37,6 +37,8 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 4. Horray!
 
 # Updating
+If you have [gm_shell](https://github.com/bjurd/gm_shell) installed, you can use the `rupdate` command in Discord to have the relay update itself.
+
 1. `cd` to wherever you cloned the repo
 2. stash, pull, pop
 	<details>
@@ -53,3 +55,7 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 > If you don't stash before pulling, it's likely git will overwrite your config and other changes you've made
 > with the default, blank config. Make sure to stash if you want to keep your changes and to pop the stash
 > after pull completes.
+
+> [!NOTE]
+> It's very likely a server restart will be needed after fetching updates,
+> because the Discord library internals won't autorefresh.
