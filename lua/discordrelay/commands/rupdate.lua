@@ -19,12 +19,11 @@ local function UpdateShell(Path, Command)
 	return stdout
 end
 
---- @param Socket WEBSOCKET
 --- @param ChannelID string
 --- @param EmbedBuilder Embed
-local function EarlyReturn(Socket, ChannelID, EmbedBuilder)
+local function EarlyReturn(ChannelID, EmbedBuilder)
 	local Message = EmbedBuilder:End()
-	discord.messages.SendToChannel(Socket, ChannelID, Message)
+	relay.conn.SendWebhookMessage(ChannelID, Message)
 end
 
 local RelayUpdate = relay.commands.New()
@@ -44,14 +43,14 @@ local RelayUpdate = relay.commands.New()
 
 		if not util.IsBinaryModuleInstalled("shell") then
 			discord.logging.Log(LOG_ERROR, "Missing gmsv_shell module")
-			return EarlyReturn(Socket, ChannelID, Message) -- goto's crying about scope jumps is annoying
+			return EarlyReturn(ChannelID, Message) -- goto's crying about scope jumps is annoying
 		end
 
 		require("shell")
 
 		if not isfunction(ShellRun) then
 			discord.logging.Log(LOG_ERROR, "Improper gmsv_shell module")
-			return EarlyReturn(Socket, ChannelID, Message)
+			return EarlyReturn(ChannelID, Message)
 		end
 
 		local RelayPath = SafeShell("find -L ./garrysmod/addons -type f -path '*/lua/autorun/server/discordrelay.lua' -printf '%h\n' | sed 's|/lua/autorun/server$||'")
@@ -63,14 +62,14 @@ local RelayUpdate = relay.commands.New()
 
 		if not RelayPath or string.len(RelayPath) < 1 then
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to find relay install")
-			return EarlyReturn(Socket, ChannelID, Message)
+			return EarlyReturn(ChannelID, Message)
 		end
 
 		local StashStatus = UpdateShell(RelayPath, "git stash push")
 
 		if not StashStatus then
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to stash with git. Either the addon is not a repository or git is missing.")
-			return EarlyReturn(Socket, ChannelID, Message)
+			return EarlyReturn(ChannelID, Message)
 		end
 
 		local PullStatus = UpdateShell(RelayPath, "git pull")
@@ -79,7 +78,7 @@ local RelayUpdate = relay.commands.New()
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to pull with git. Check for conflicts.")
 			UpdateShell(RelayPath, "git stash pop")
 
-			return EarlyReturn(Socket, ChannelID, Message)
+			return EarlyReturn(ChannelID, Message)
 		end
 
 		local PopStatus = UpdateShell(RelayPath, "git stash pop")
@@ -88,7 +87,7 @@ local RelayUpdate = relay.commands.New()
 			Message = Message:WithColorRGB(255, 150, 0)
 
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to pop stash, but the update completed. Make sure to pop the stash manually before updating again.")
-			return EarlyReturn(Socket, ChannelID, Message)
+			return EarlyReturn(ChannelID, Message)
 		else
 			Message = Message:WithColorRGB(0, 255, 0)
 		end
@@ -96,7 +95,7 @@ local RelayUpdate = relay.commands.New()
 		Message = Message:WithDescription("```Successfully updated relay```")
 					:End()
 
-		discord.messages.SendToChannel(Socket, ChannelID, Message)
+		relay.conn.SendWebhookMessage(ChannelID, Message)
 	end)
 
 relay.commands.Register(RelayUpdate)
