@@ -53,7 +53,7 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
-		local RelayPath = SafeShell("find -L ./garrysmod/addons -type f -path '*/lua/autorun/server/discordrelay.lua' -printf '%h\n' | sed 's|/lua/autorun/server$||'")
+		local RelayPath = SafeShell("find -L ./garrysmod/addons -mindepth 3 -maxdepth 5 -type f -path '*/lua/autorun/server/discordrelay.lua' -printf '%h\n' | sed 's|/lua/autorun/server$||'")
 
 		if isstring(RelayPath) then
 			-- LuaLS fail #43205
