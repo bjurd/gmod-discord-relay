@@ -32,10 +32,14 @@ end
 --- @return string|nil
 local function GitChangelog(Path, Old, New)
 	if not Old or not New then return nil end
+
+	Old = string.Trim(Old)
+	New = string.Trim(New)
+
 	if Old == New then return nil end
 
 	local Command = Format(
-		"git log --first-parent --no-merges --reverse --pretty=format:'%%h %%s' %s..%s",
+		"git -c core.pager=cat log --first-parent --no-merges --reverse --pretty=format:'%%h %%s' %s..%s",
 
 		Old,
 		New
@@ -46,6 +50,8 @@ local function GitChangelog(Path, Old, New)
 	if not Changelog then
 		return nil
 	end
+
+	Changelog = string.Trim(Changelog)
 
 	local Header = Format(
 		"Updated %s -> %s\n",
@@ -117,7 +123,7 @@ local RelayUpdate = relay.commands.New()
 		local OldGitVersion = UpdateShell(RelayPath, "git rev-parse head")
 
 		discord.logging.DevLog(LOG_NORMAL, "Pulling relay")
-		local PullStatus = UpdateShell(RelayPath, "git pull")
+		local PullStatus = UpdateShell(RelayPath, "git pull --ff-only")
 
 		if not PullStatus then
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to pull with git. Check for conflicts.")
