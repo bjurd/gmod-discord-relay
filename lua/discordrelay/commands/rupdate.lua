@@ -26,6 +26,43 @@ local function EarlyReturn(ChannelID, EmbedBuilder)
 	relay.conn.SendWebhookMessage(ChannelID, Message)
 end
 
+--- @param Path string
+--- @param Old string|nil
+--- @param New string|nil
+--- @return string|nil
+local function GitChangelog(Path, Old, New)
+	if not Old or not New then return nil end
+	if Old == New then return nil end
+
+	local Command = Format(
+		"git log --first-parent --no-merges --reverse --pretty=format:'%%h %%s' %s..%s",
+
+		Old,
+		New
+	)
+
+	local Changelog = UpdateShell(Path, Command)
+
+	if not Changelog then
+		return nil
+	end
+
+	local Header = Format(
+		"Updated %s -> %s\n",
+
+		string.sub(Old, 1, 7),
+		string.sub(New, 1, 7)
+	)
+
+	local Max = 1900 - string.len(Header)
+
+	if string.len(Changelog) > Max then
+		Changelog = string.sub(Changelog, 1, Max) .. "\n…"
+	end
+
+	return Format("```%s%s```", Header, Changelog)
+end
+
 local RelayUpdate = relay.commands.New()
 	:WithName("rupdate")
 	:WithDescription("Attempts to self-update the relay, a server restart may be required afterwards")
@@ -77,6 +114,8 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
+		local OldGitVersion = UpdateShell(RelayPath, "git rev-parse head")
+
 		discord.logging.DevLog(LOG_NORMAL, "Pulling relay")
 		local PullStatus = UpdateShell(RelayPath, "git pull")
 
@@ -87,22 +126,51 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
+		local NewGitVersion = UpdateShell(RelayPath, "git rev-parse head")
+		local Changelog = GitChangelog(RelayPath, OldGitVersion, NewGitVersion)
+
 		discord.logging.DevLog(LOG_NORMAL, "Popping relay")
 		local PopStatus = UpdateShell(RelayPath, "git stash pop")
 
 		if not PopStatus then
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to pop stash, but the update completed. Make sure to pop the stash manually before updating again.")
+		end
 
-			Message = Message:WithDescription("```Successfully updated relay, check server console for details.```")
-						:WithColorRGB(255, 150, 0)
+		local Description = ""
+		if not Changelog or string.len(Changelog) == 0 then
+			Description = "```Relay is up to date"
+
+			if not PopStatus then
+				Description = Description .. ", check server console for details.```"
+				Message = Message:WithColorRGB(255, 150, 0)
+			else
+				Description = Description .. "```"
+				Message = Message:WithColorRGB(0, 255, 0)
+			end
+
+			Message = Message:WithDescription(Description)
+						:End()
 		else
-			Message = Message:WithDescription("```Successfully updated relay```")
-						:WithColorRGB(0, 255, 0)
+			Description = "```Successfully updated relay"
+
+			if not PopStatus then
+				Description = Description .. ", check server console for details.```"
+				Message = Message:WithColorRGB(255, 150, 0)
+			else
+				Description = Description .. "```"
+				Message = Message:WithColorRGB(0, 255, 0)
+			end
+
+			Message = Message:WithDescription(Description)
+						:End()
+
+			Message = Message:WithEmbed()
+				:WithDescription(Changelog)
+				:WithColorRGB(255, 150, 0)
+				:End()
 		end
 
 		discord.logging.DevLog(LOG_NORMAL, "Relay update concluded")
-
-		Message = Message:End()
 
 		relay.conn.SendWebhookMessage(ChannelID, Message)
 	end)
