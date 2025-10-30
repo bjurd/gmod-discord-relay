@@ -9,7 +9,7 @@ local Help = relay.commands.New()
 		local CommandList = {}
 
 		for Name, Command in SortedPairs(relay.commands.List) do
-			CommandList[#CommandList + 1] = Format("%s%s - %s", CommandPrefix, Name, Command.Description)
+			CommandList[#CommandList + 1] = Format("`%s%s` - %s", CommandPrefix, Name, Command.Description)
 		end
 
 		local Compiled = table.concat(CommandList, "\n")
