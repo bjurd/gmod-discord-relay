@@ -122,6 +122,7 @@ local RelayUpdate = relay.commands.New()
 
 		local OldGitVersion = UpdateShell(RelayPath, "git rev-parse head")
 
+
 		discord.logging.DevLog(LOG_NORMAL, "Pulling relay")
 		local PullStatus = UpdateShell(RelayPath, "git pull --ff-only")
 
