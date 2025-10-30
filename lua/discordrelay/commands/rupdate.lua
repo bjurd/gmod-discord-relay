@@ -114,7 +114,6 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
-
 		local OldGitVersion = UpdateShell(RelayPath, "git rev-parse head")
 
 		discord.logging.DevLog(LOG_NORMAL, "Pulling relay")
