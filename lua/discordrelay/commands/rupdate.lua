@@ -122,7 +122,7 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
-		local OldGitVersion = UpdateShell(RelayPath, "git rev-parse head")
+		local OldGitVersion = UpdateShell(RelayPath, "git rev-parse HEAD")
 
 		discord.logging.DevLog(LOG_NORMAL, "Pulling relay")
 		local PullStatus = UpdateShell(RelayPath, "git pull --ff-only")
@@ -135,7 +135,7 @@ local RelayUpdate = relay.commands.New()
 		end
 
 
-		local NewGitVersion = UpdateShell(RelayPath, "git rev-parse head")
+		local NewGitVersion = UpdateShell(RelayPath, "git rev-parse HEAD")
 		print("ver", OldGitVersion, NewGitVersion)
 		local Changelog = GitChangelog(RelayPath, OldGitVersion, NewGitVersion)
 
