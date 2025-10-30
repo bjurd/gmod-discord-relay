@@ -11,7 +11,7 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 
 - Relays Discord messages to in-game (duh)
 - Relays in-game messages to Discord (duh)
-- Can read and write to multiple channels/guilds for the same server
+- Can read and write to multiple channels/guilds at once
 - Simple configuration
 - Runs entirely on the server, no external backends or processes
 - A-OK caching to make it fast like a racecar
