@@ -48,12 +48,10 @@ local function GitChangelog(Path, Old, New)
 	local Changelog = UpdateShell(Path, Command)
 
 	if not Changelog then
-		print("no changelog")
 		return nil
 	end
 
 	Changelog = string.Trim(Changelog)
-	print("raw", Changelog)
 
 	local Header = Format(
 		"Updated %s -> %s\n",
@@ -135,7 +133,6 @@ local RelayUpdate = relay.commands.New()
 		end
 
 		local NewGitVersion = UpdateShell(RelayPath, "git rev-parse HEAD")
-		print("ver", OldGitVersion, NewGitVersion)
 		local Changelog = GitChangelog(RelayPath, OldGitVersion, NewGitVersion)
 
 		discord.logging.DevLog(LOG_NORMAL, "Popping relay")
@@ -147,7 +144,6 @@ local RelayUpdate = relay.commands.New()
 
 		local Description = ""
 		if not Changelog or string.len(Changelog) == 0 then
-			print("Changelog up to date", Changelog, isstring(Changelog) and string.len(Changelog) or -1)
 			Description = "```Relay is up to date"
 
 			if not PopStatus then
