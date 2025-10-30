@@ -134,6 +134,7 @@ local RelayUpdate = relay.commands.New()
 			return EarlyReturn(ChannelID, Message)
 		end
 
+
 		local NewGitVersion = UpdateShell(RelayPath, "git rev-parse HEAD")
 		print("ver", OldGitVersion, NewGitVersion)
 		local Changelog = GitChangelog(RelayPath, OldGitVersion, NewGitVersion)
