@@ -166,7 +166,16 @@ function commands.Process(Name, Socket, Data, Args)
 			end
 		end
 
-		-- TODO: Tell the user they don't have permission? May be a bad idea for rate limiting reasons
-		discord.logging.DevLog(LOG_WARNING, "Tried to run command %s with no permission", Name)
+		local ChannelID = Data.channel_id
+		if relay.conn.IsChannel(ChannelID, "write") then
+			local Message = discord.messages.Begin()
+					:WithUsername("Command Executor")
+					:WithEmbed()
+						:WithDescription("```Insufficient permissions```")
+						:WithColorRGB(255, 0, 0)
+						:End()
+
+			relay.conn.SendWebhookMessage(ChannelID, Message)
+		end
 	end)
 end
