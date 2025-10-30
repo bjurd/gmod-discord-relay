@@ -170,7 +170,7 @@ local RelayUpdate = relay.commands.New()
 				:End()
 		end
 
-		discord.logging.DevLog(LOG_NORMAL, "Relay update concluded")
+		discord.logging.DevLog(LOG_SUCCESS, "Relay update concluded")
 
 		relay.conn.SendWebhookMessage(ChannelID, Message)
 	end)
