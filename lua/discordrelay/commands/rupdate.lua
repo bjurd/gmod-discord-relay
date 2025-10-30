@@ -93,7 +93,7 @@ local RelayUpdate = relay.commands.New()
 		if not PopStatus then
 			discord.logging.Log(LOG_ERROR, "RelayUpdate failed to pop stash, but the update completed. Make sure to pop the stash manually before updating again.")
 
-			Message = Message:WithDescription("```Successfully updated relay, check server console for details.``")
+			Message = Message:WithDescription("```Successfully updated relay, check server console for details.```")
 						:WithColorRGB(255, 150, 0)
 		else
 			Message = Message:WithDescription("```Successfully updated relay```")
