@@ -108,6 +108,7 @@ LoadFile("Colors")
 LoadFile("BigInt")
 LoadFile("Cache")
 LoadFile("CloseCode")
+LoadFile("Reference")
 
 LoadFile("OOP")
 LoadObjectFile("Role")

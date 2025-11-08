@@ -1,5 +1,33 @@
 util.AddNetworkString("DiscordRelay::ChatMessage")
 
+local Blurple = Color(88, 101, 242, 255)
+
+--- Reads message_reference and referenced_message
+--- @param Data table
+--- @param SendMessageData table
+local function ProcessReference(Data, SendMessageData)
+	if not istable(Data.message_reference) then
+		return
+	end
+
+	if Data.message_reference.type == REFERENCE_REPLY then
+		local Referenced = Data.referenced_message
+		local ReferencedUser = discord.oop.ConstructNew("User", Referenced.author)
+		-- There is no Referenced.member, so we can't color their name too unfortunately
+
+		local Name = relay.util.GetUserName(ReferencedUser)
+
+		table.insert(SendMessageData, 3, Color(175, 175, 175, 255)) -- TODO: This is kind of cursed
+		table.insert(SendMessageData, 4, " replying to ")
+		table.insert(SendMessageData, 5, Blurple)
+		table.insert(SendMessageData, 6, Name)
+
+		return
+	end
+
+	-- TODO: REFERENCE_FORWARD
+end
+
 hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(Socket, Data)
 	if player.GetCount() < 1 then return end -- :P
 
@@ -11,10 +39,11 @@ hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(
 		local Name = relay.util.GetMemberName(User, Member)
 		local NameColor = Member:GetNameColor(Roles)
 
+		local SendMessageData = { NameColor, Name, Color(255, 255, 255, 255), ": ", Data.content }
+		ProcessReference(Data, SendMessageData)
+
 		net.Start("DiscordRelay::ChatMessage")
-			net.WriteColor(NameColor, false)
-			net.WriteString(Name)
-			net.WriteString(Data.content)
+			net.WriteTable(SendMessageData, true)
 		net.Broadcast()
 	end)
 end)
