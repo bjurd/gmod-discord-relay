@@ -115,3 +115,17 @@ function rutil.CleanUsername(Username)
 
 	return Username
 end
+
+--- Returns (or attempts to) a Player's Steam name
+--- TODO: Make this use the Steam API
+--- @param Player Player
+--- @return string
+function rutil.GetPlayerName(Player)
+	--- @diagnostic disable: undefined-field
+	if isfunction(Player.RealName) then -- Player SetName For ULX
+		return Player:RealName()
+	end
+	--- @diagnostic enable: undefined-field
+
+	return Player:GetName()
+end
