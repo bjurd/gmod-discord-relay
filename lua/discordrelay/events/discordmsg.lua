@@ -36,8 +36,13 @@ hook.Add("DiscordRelay::ProcessDiscordMessage", "DEFAULT::SendToGame", function(
 
 	discord.roles.GetGuildRoles(Socket, Data.guild_id, function(Roles)
 		-- There's no other endpoint for Role data than this one unfortunately
+
 		local Name = relay.util.GetMemberName(User, Member)
-		local NameColor = Member:GetNameColor(Roles)
+		local NameColor = Color(255, 255, 255, 255)
+
+		if Roles then
+			NameColor = Member:GetNameColor(Roles)
+		end
 
 		local SendMessageData = { NameColor, Name, Color(255, 255, 255, 255), ": ", Data.content }
 		ProcessReference(Data, SendMessageData)
