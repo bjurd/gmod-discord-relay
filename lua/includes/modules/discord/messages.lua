@@ -36,7 +36,7 @@ function POSTMessage(Socket, MessageURL, Data)
 
 		["headers"] = {
 			["Content-Type"] = "application/json",
-			["Content-Length"] = tostring(string.len(MessageData)),
+			["Content-Length"] = tostring(utf8.len(MessageData)),
 			["Host"] = "discord.com",
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},

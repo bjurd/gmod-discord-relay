@@ -178,7 +178,7 @@ function CreateChannelWebhook(Socket, ChannelID, Callback)
 
 		["headers"] = {
 			["Content-Type"] = "application/json",
-			["Content-Length"] = tostring(string.len(CreationData)),
+			["Content-Length"] = tostring(utf8.len(CreationData)),
 			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
@@ -211,7 +211,7 @@ function POSTMessage(Socket, WebhookURL, Data)
 
 		["headers"] = {
 			["Content-Type"] = "application/json",
-			["Content-Length"] = tostring(string.len(MessageData)),
+			["Content-Length"] = tostring(utf8.len(MessageData)),
 			["Host"] = "discord.com",
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
