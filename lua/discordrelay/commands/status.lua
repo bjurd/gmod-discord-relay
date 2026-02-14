@@ -9,19 +9,20 @@ local Status = relay.commands.New()
 		local IP = game.GetIPAddress()
 		local Gamemode = gmod.GetGamemode().Name
 		local Map = game.GetMap()
-		local MapVer = game.GetMapVersion()
+		local MapRevision, MapFormat = game.GetMapVersion()
 		local PlayerCount = player.GetCount() + player.GetCountConnecting()
 		local MaxPlayers = game.MaxPlayers()
 		local OnlineTime = relay.util.FormatTime(RealTime())
 		local MapTime = relay.util.FormatTime(CurTime())
 
 		local Description = Format(
-			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d)\n**Player Count**: %d / %d\n**Uptime**: %s\n**Map Time**: %s",
+			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Player Count**: %d / %d\n**Uptime**: %s\n**Map Time**: %s",
 
 			IP,
 			Gamemode,
 			Map,
-			MapVer,
+			MapRevision,
+			MapFormat,
 			PlayerCount,
 			MaxPlayers,
 			OnlineTime,
