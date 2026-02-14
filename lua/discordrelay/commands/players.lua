@@ -1,7 +1,7 @@
 --- @param A Player
 --- @param B Player
 local function SortPlayers(A, B)
-	return A:GetName() < B:GetName()
+	return A:Nick() < B:Nick()
 end
 
 local function ChunkByNewline(Text, Limit)

@@ -11,7 +11,7 @@ function rutil.FindPlayer(Token)
 	Token = string.lower(Token)
 
 	for _, Player in player.Iterator() do
-		if string.find(string.lower(Player:GetName()), Token) then
+		if string.find(string.lower(Player:Nick()), Token) then
 			Found = Player
 			break
 		end
@@ -136,5 +136,5 @@ function rutil.GetPlayerName(Player)
 	end
 	--- @diagnostic enable: undefined-field
 
-	return Player:GetName()
+	return Player:Nick()
 end
