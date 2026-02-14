@@ -14,7 +14,7 @@ hook.Add("player_disconnect", "DiscordRelay::OnDisconnect", function(Data)
 	local Description = Format("%s disconnected (%s)", relay.util.CleanUsername(Username), Reason)
 
 	local Message = discord.messages.Begin()
-		:WithUsername(relay.util.LimitUsername(Username))
+		:WithUsername(relay.util.CleanUsername(Username))
 		:WithEmbed()
 			:WithAuthor()
 				:WithName(SteamID)

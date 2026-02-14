@@ -25,3 +25,24 @@ function SafeFormat(String, ...)
 
 	return String
 end
+
+--- Cleans a username of invalid characters/sequences
+--- @param Username string
+--- @return string
+function CleanUsername(Username)
+	Username = string.gsub(Username, "[@#:`]", "") -- Cannot contain @, #, :, ``` - This seems to be a complete lie because it still works with these names, nice docs!
+	Username = string.gsub(Username, "[dD][iI][sS][cC][oO][rR][dD]", "") -- Cannot contain "discord"
+	Username = string.gsub(Username, "%s+", " ") -- Collapse repetitive whitespace
+	Username = string.Trim(Username)
+
+	local Lower = string.lower(Username)
+	if Lower == "everyone" or Lower == "here" then -- Cannot be these
+		return "Player"
+	end
+
+	if string.len(Username) < 2 then
+		return "Player"
+	end
+
+	return string.Left(Username, 32)
+end

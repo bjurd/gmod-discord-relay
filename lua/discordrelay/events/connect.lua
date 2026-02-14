@@ -7,7 +7,7 @@ hook.Add("player_connect", "DiscordRelay::OnConnect", function(Data)
 	local Description = Format("%s connected", relay.util.CleanUsername(Username))
 
 	local Message = discord.messages.Begin()
-		:WithUsername(relay.util.LimitUsername(Username)) -- Usernames don't need filtered here
+		:WithUsername(relay.util.CleanUsername(Username))
 		:WithEmbed()
 			:WithAuthor()
 				:WithName(SteamID)
