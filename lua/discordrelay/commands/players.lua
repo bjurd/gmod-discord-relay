@@ -100,7 +100,7 @@ local Players = relay.commands.New()
 
 			for i = 1, PlayerCount do
 				local Player = Players[i]
-				local Name = relay.util.MarkdownEscape(Player:Nick())
+				local Name = relay.util.CleanUsername(Player:Nick())
 				local SteamID = relay.util.MarkdownEscape(Player:SteamID()) -- SteamIDs have _'s
 
 				table.insert(PlayerList, Format("- %s (%s)", Name, SteamID))
@@ -114,7 +114,7 @@ local Players = relay.commands.New()
 
 			for i = 1, BotCount do
 				local Bot = Bots[i]
-				local Name = relay.util.MarkdownEscape(Bot:Nick())
+				local Name = relay.util.CleanUsername(Bot:Nick())
 
 				table.insert(BotList, Format("- %s", Name))
 			end
