@@ -54,7 +54,7 @@ local function AddChunkedField(Message, BaseName, Value)
 		Message = Message
 					:WithField()
 						:WithName(Name)
-						:WithValue(Chunks[i] ~= "" and Chunks[i] or "\u{200B}")
+						:WithValue(Chunks[i] ~= "" and Chunks[i] or "\226\128\139")
 					:End()
 	end
 
