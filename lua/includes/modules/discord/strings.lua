@@ -40,7 +40,8 @@ function CleanUsername(Username)
 		return "Player"
 	end
 
-	if utf8.len(Username) < 2 then
+	local Length = utf8.len(Username)
+	if not Length or Length < 2 then
 		return "Player"
 	end
 

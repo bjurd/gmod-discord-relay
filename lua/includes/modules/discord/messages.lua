@@ -30,13 +30,16 @@ end
 function POSTMessage(Socket, MessageURL, Data)
 	local MessageData = util.TableToJSON(Data)
 
+	local Length = utf8.len(MessageData)
+	if Length == false then Length = string.len(MessageData) end
+
 	HTTP({
 		["url"] = MessageURL,
 		["method"] = "POST",
 
 		["headers"] = {
 			["Content-Type"] = "application/json",
-			["Content-Length"] = tostring(utf8.len(MessageData)),
+			["Content-Length"] = tostring(Length),
 			["Host"] = "discord.com",
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
