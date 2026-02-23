@@ -172,16 +172,13 @@ function CreateChannelWebhook(Socket, ChannelID, Callback)
 	local CreationTable = { ["name"] = "Relay" } -- TODO: Make a config option for this? Doesn't really matter though
 	local CreationData = util.TableToJSON(CreationTable)
 
-	local Length = utf8.len(CreationData)
-	if Length == false then Length = string.len(CreationData) end
-
 	HTTP({
 		["url"] = WebhookURL,
 		["method"] = "POST",
 
 		["headers"] = {
 			["Content-Type"] = "application/json",
-			["Content-Length"] = tostring(Length),
+			["Content-Length"] = tostring(string.len(CreationData)),
 			["Host"] = "discord.com", -- This is required for webhooks, probably a misconfiguration on Discord's side
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
@@ -214,7 +211,7 @@ function POSTMessage(Socket, WebhookURL, Data)
 
 		["headers"] = {
 			["Content-Type"] = "application/json",
-			["Content-Length"] = tostring(utf8.len(MessageData)),
+			["Content-Length"] = tostring(string.len(MessageData)),
 			["Host"] = "discord.com",
 			["Authorization"] = Format("Bot %s", Socket.Token)
 		},
