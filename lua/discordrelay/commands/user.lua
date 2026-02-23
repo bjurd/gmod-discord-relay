@@ -70,8 +70,8 @@ local User = relay.commands.New()
 
 		table.insert(UserInfo, "")
 
-		AddFormatLabel(UserInfo, "Username", relay.util.CleanUsername(relay.util.GetPlayerName(FoundPlayer)))
-		AddFormatLabel(UserInfo, "Nickname", relay.util.CleanUsername(FoundPlayer:Nick()))
+		AddFormatLabel(UserInfo, "Username", relay.util.MarkdownEscape(relay.util.GetPlayerName(FoundPlayer)))
+		AddFormatLabel(UserInfo, "Nickname", relay.util.MarkdownEscape(FoundPlayer:Nick()))
 		AddFormatLabel(UserInfo, "Group", relay.util.MarkdownEscape(FoundPlayer:GetUserGroup()))
 		AddFormatLabel(UserInfo, "Team", relay.util.MarkdownEscape(team.GetName(FoundPlayer:Team())))
 
