@@ -4,7 +4,7 @@ hook.Add("player_connect", "DiscordRelay::OnConnect", function(Data)
 	local SteamID64 = util.SteamIDTo64(SteamID)
 	local Username = Data.name
 
-	local Description = Format("%s connected", relay.util.CleanUsername(Username))
+	local Description = Format("%s connected", relay.util.MarkdownEscape(Username))
 
 	local Message = discord.messages.Begin()
 		:WithUsername(discord.strings.CleanUsername(Username))
