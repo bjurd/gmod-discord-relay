@@ -15,19 +15,24 @@ local Status = relay.commands.New()
 		local OnlineTime = relay.util.FormatTime(RealTime())
 		local MapTime = relay.util.FormatTime(CurTime())
 
+		local Version = VERSION
+		local VersionStr = VERSIONSTR
+
 		local Branch = BRANCH or "Unknown"
 		if Branch == "unknown" then
 			Branch = "main"
 		end
 
 		local Description = Format(
-			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Branch**: %s\n**Player Count**: %d / %d\n**Uptime**: %s\n**Map Time**: %s",
+			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Version**: %s (%s)\n**Branch**: %s\n**Player Count**: %d / %d\n**Uptime**: %s\n**Map Time**: %s",
 
 			IP,
 			Gamemode,
 			Map,
 			MapRevision or 0,
 			MapFormat or 0,
+			VersionStr,
+			Version,
 			Branch,
 			PlayerCount,
 			MaxPlayers,
