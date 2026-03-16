@@ -24,7 +24,7 @@ local Status = relay.commands.New()
 		end
 
 		local Description = Format(
-			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Player Count**: %d / %d\n\n**Uptime**: %s\n**Map Time**: %s\n\n**Version**: %s (%s)\n**Branch**: %s\n",
+			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Player Count**: %d / %d\n\n**Uptime**: %s\n**Map Time**: %s\n\n**Version**: %s (%s)\n**Branch**: %s",
 
 			IP,
 			Gamemode,
