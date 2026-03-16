@@ -15,7 +15,7 @@ local Status = relay.commands.New()
 		local OnlineTime = relay.util.FormatTime(RealTime())
 		local MapTime = relay.util.FormatTime(CurTime())
 
-		local Version = VERSION
+		local Version = tostring(VERSION)
 		local VersionStr = VERSIONSTR
 
 		local Branch = BRANCH or "Unknown"
@@ -24,20 +24,22 @@ local Status = relay.commands.New()
 		end
 
 		local Description = Format(
-			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Version**: %s (%s)\n**Branch**: %s\n**Player Count**: %d / %d\n**Uptime**: %s\n**Map Time**: %s",
+			"**IP**: %s\n**Gamemode**: %s\n**Map**: %s (v%d, f%d)\n**Player Count**: %d / %d\n\n**Uptime**: %s\n**Map Time**: %s\n\n**Version**: %s (%s)\n**Branch**: %s\n",
 
 			IP,
 			Gamemode,
 			Map,
 			MapRevision or 0,
 			MapFormat or 0,
-			VersionStr,
-			Version,
-			Branch,
 			PlayerCount,
 			MaxPlayers,
+
 			OnlineTime,
-			MapTime
+			MapTime,
+
+			VersionStr,
+			Version,
+			Branch
 		)
 
 		local Message = discord.messages.Begin()
