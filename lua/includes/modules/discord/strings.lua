@@ -26,6 +26,17 @@ function SafeFormat(String, ...)
 	return String
 end
 
+--- @param String string|nil
+--- @return string|nil
+function SafeUTF8(String)
+	if not isstring(String) then
+		return String
+	else
+		--- @cast String string
+		return utf8.force(String)
+	end
+end
+
 --- @param Code number
 --- @return boolean
 function IsCombiningCode(Code)

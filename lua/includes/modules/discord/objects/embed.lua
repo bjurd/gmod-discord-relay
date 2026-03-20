@@ -23,8 +23,8 @@ end
 
 function EMBED:__json()
 	local SelfParse = {
-		title = self.Title,
-		description = self.Description,
+		title = discord.strings.SafeUTF8(self.Title),
+		description = discord.strings.SafeUTF8(self.Description),
 		url = self.URL,
 		color = self.Color,
 		fields = {}

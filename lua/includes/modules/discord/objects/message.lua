@@ -17,10 +17,10 @@ end
 
 function MESSAGE:__json()
 	local SelfParse = {
-		content = self.Content,
+		content = discord.strings.SafeUTF8(self.Content),
 		embeds = {},
-		username = self.Username,
-		avatar_url = self.AvatarURL,
+		username = discord.strings.SafeUTF8(self.Username),
+		avatar_url = discord.strings.SafeUTF8(self.AvatarURL),
 		allowed_mentions = { parse = {} } -- Placeholder to disable these
 	}
 
