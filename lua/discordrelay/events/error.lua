@@ -1,5 +1,20 @@
+--- @type table<string, number>
+local ErrorCooldowns = {}
+
+local function ClearCooldowns()
+	local Time = CurTime()
+
+	for Message, ThrowTime in next, ErrorCooldowns do
+		if Time - ThrowTime >= 1 then
+			ErrorCooldowns[Message] = nil
+		end
+	end
+end
+
 hook.Add("OnLuaError", "DiscordRelay::ErrorLog", function(Message, Realm, Stack, Addon, AddonID)
 	Addon = Addon or "ERROR"
+
+	ClearCooldowns()
 
 	local ErrorMessage = Format("[%s] %s\n", Addon, Message)
 
@@ -15,6 +30,12 @@ hook.Add("OnLuaError", "DiscordRelay::ErrorLog", function(Message, Realm, Stack,
 
 	ErrorMessage = string.Trim(ErrorMessage)
 	-- ErrorMessage = relay.util.MarkdownEscape(ErrorMessage) -- This will mess up since it's in a code block
+
+	if ErrorCooldowns[ErrorMessage] then
+		return
+	end
+
+	ErrorCooldowns[ErrorMessage] = CurTime()
 
 	local Description = Format("```\n%s\n```", ErrorMessage)
 
