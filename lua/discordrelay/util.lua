@@ -85,6 +85,19 @@ end
 --- @param String string
 --- @return string
 function rutil.MarkdownEscape(String)
+	local URLs = {}
+	local i = 0
+
+	String = string.gsub(String, "https?://[%w%p]+", function(URL)
+		i = i + 1
+
+		local Key = "\0URL" .. i .. "\0"
+		URLs[Key] = URL
+
+		return Key
+	end)
+
+	-- Markdown
 	String = string.gsub(String, "([\\%*_%`~>|#])", "\\%1")
 
 	-- Lists
@@ -97,6 +110,10 @@ function rutil.MarkdownEscape(String)
 	String = string.gsub(String, "(\r?\n)%s*(%d+)%.%s", "%1%2\\. ")
 	if string.match(String, "^[%s]*%d+%.%s") then
 		String = string.gsub(String, "^%s*(%d+)%.%s", "%1\\. ")
+	end
+
+	for Key, URL in next, URLs do
+		String = string.gsub(String, string.PatternSafe(Key), URL)
 	end
 
 	return String -- LuaLS crying about multiple returns
