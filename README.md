@@ -30,7 +30,15 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 	</details>
 2. Install [GWSockets](https://github.com/FredyH/GWSockets) and [CHTTP](https://github.com/timschumi/gmod-chttp) into your `garrysmod/lua/bin` folder
 3. Configure `addons/discordrelay/data_static/relay/config.txt`
-4. Horray!
+4. Give your bot the `Server Members` and `Message Content` Privileged Gateway Intentions in the Discord developer portal
+	<details>
+
+	<summary>Help I'm still retarded</summary>
+
+	https://discord.com/developers/applications/(bot_user_id)/bot
+
+	</details>
+5. Horray!
 
 # Updating
 If you have [gm_shell](https://github.com/bjurd/gm_shell) installed, you can use the `rupdate` command in Discord to have the relay update itself.
