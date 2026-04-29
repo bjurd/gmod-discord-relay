@@ -3,10 +3,6 @@ A Garry's Mod Discord relay that runs entirely on the server, no thirdparty or e
 
 (Except for the required binaries because this game's networking is severely handicapped)
 
-> [!WARNING]
-> There's been a major overhaul of the relay's internals.
-> You will almost definitely have to reconfigure and/or recode anything to do with it.
-
 # Features!!!1
 
 - Relays Discord messages to in-game (duh)
