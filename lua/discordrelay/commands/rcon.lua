@@ -26,9 +26,11 @@ local RCON = relay.commands.New()
 			return
 		end
 
-		if IsConCommandBlocked(Command) then
+		local CommandStr = table.concat(Args, " ")
+
+		if IsConCommandBlocked(CommandStr) then
 			if Writeable then
-				local Description = Format("```\n%s\n```", Command)
+				local Description = Format("```\n%s\n```", CommandStr)
 
 				local Message = discord.messages.Begin()
 					:WithUsername("RCON")
@@ -46,10 +48,16 @@ local RCON = relay.commands.New()
 			return
 		end
 
-		RunConsoleCommand(unpack(Args))
+		local CommandExec = CommandStr
+		if not string.EndsWith(CommandExec, "\n") then
+			-- game.ConsoleCommand wants this
+			CommandExec = CommandExec .. "\n"
+		end
+
+		-- RunConsoleCommand(unpack(Args))
+		game.ConsoleCommand(CommandExec)
 
 		if Writeable then
-			local CommandStr = table.concat(Args, " ")
 			local Description = Format("```\n%s\n```", CommandStr)
 
 			local Message = discord.messages.Begin()
